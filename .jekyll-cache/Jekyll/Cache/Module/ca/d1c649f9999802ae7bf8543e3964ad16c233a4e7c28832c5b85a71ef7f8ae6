@@ -1,0 +1,54 @@
+I"{
+
+
+
+
+
+<article id="post-teaching-introduction_to_python_numpy" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      <a href="/teaching/2022-09-16-introduction_to_python_numpy/" class="flip-title">
+        Introduction
+      </a>
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2022-09-16T00:00:00+02:00">16 Sep 2022</time> in <a href="/teaching/" class="flip-title">Teaching</a> 
+      </span>
+      
+    </div>
+
+    
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science.
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <p>Numerical Linear Algebra (NLA) is the study of how matrix operations can be used to create computer algorithms which efficiently and accurately provide approximate answers to questions in continuous mathematics.</p>
+
+
+    
+    
+    <footer>
+      <p class="read-more">
+        Continue reading <a class="heading flip-title" href="/teaching/2022-09-16-introduction_to_python_numpy/">Introduction</a>
+
+      </p>
+    </footer>
+  
+</article>
+:ET

@@ -20,16 +20,15 @@
 lang:                  en
 
 # The title of your blog. Used in the sidebar and the browser tab.
-title:                 Starter Kit
+title:                 Davide Evangelista
 
 # A short description (~150 chars) of the page used for the meta description tag.
 # Can use markdown, but no more than one paragraph (enforced by `>`)
 description:           >
-  Hydejack is a boutique Jekyll theme for hackers, nerds, and academics,
-  with a focus on personal sites that are meant to impress.
+  A blog dedicated to my research and teaching, mainly based on Machine Learning and Inverse Problems.
 
 # A shorter description for the sidebar.
-tagline:               Change `tagline` in `_config.yml`
+tagline:               Machine Learning and Neural Networks
 
 # A list of keywords for your blog
 keywords:              []
@@ -37,20 +36,29 @@ keywords:              []
 # A (square) logo for your site.
 # If provided, it will be shown at the top of the sidebar.
 # It also used by the `jekyll-seo-tag` plugin.
-logo:                  /assets/img/logo.png
+logo:                  /assets/img/blog/logo.png
+favicon:               /assets/img/blog/logo.ico
+apple_touch_icon:      /assets/img/blog/logo.ico
+
 
 # This should be the same author as first entry in `_data/authors.yml`.
 author:
   # Used by `jekyll-feed`:
-  name:                <firstname> <lastname>
-  email:               <mail@domain.tld>
+  name:                Davide Evangelista
+  email:               davide.evangelista5@unibo.it
   # # Used by `jekyll-seo-tag`:
-  # twitter:             <username>
+  twitter:             DavideEvangel17
 
 # Add links to the sidebar.
 menu:
-  - title:             Example
-    url:               /example/
+  - title:             Research
+    url:               /research/ 
+  - title:             Teaching
+    url:               /teaching/ 
+  - title:             CV
+    url:               /cv/      
+  # - title:             Example
+  #   url:               /example/
   - title:             Documentation
     url:               /docs/
   - title:             About
@@ -88,13 +96,13 @@ theme: jekyll-theme-hydejack
 # ----------------------------------------------------------------------------------------
  
 # Sidebar image and theme color of the site.
-accent_image:          /assets/img/sidebar-bg.jpg
+accent_image:          /assets/img/blog/futuristic-networking-technology.jpeg
 accent_color:          rgb(79,177,186)
 
 # This is used for the `theme-color` meta tag,
 # which changes the background color of the browser UI in certain browsers.
 # Defaults to `accent_color`.
-theme_color:           rgb(25,55,71)
+theme_color:           rgb(37,150,190)
 
 # The string encoding which fonts to fetch from Google Fonts.
 # See: <https://hydejack.com/docs/configuration/>
@@ -349,8 +357,8 @@ plugins:
 #   yandex:              <verification-id>
 
 # Used for twitter cards
-# twitter:
-#   username:            <username>
+twitter:
+  username:            DavideEvangel17
 
 # Used for facebook open graph
 # facebook:
@@ -359,11 +367,11 @@ plugins:
 #   admins:              <id>
 
 # Used on index and about sites
-# social:
-#   name:                <firstname> <lastname>
-#   links:
-#     - https://twitter.com/<username>
-#     - https://github.com/<username>
+social:
+  name:                Davide Evangelista
+  links:
+    - https://twitter.com/DavideEvangel17
+    - https://github.com/devangelista2
 
 
 # Plugin Configs
@@ -403,21 +411,21 @@ jekyll_compose:
         A short ~160 character description of your post for search engines,
         social media previews, etc.
       image:
-        path: /assets/img/sidebar-bg.jpg
+        path: /assets/img/blog/futuristic-networking-technology.jpeg
     posts:
       layout: post
       description: > 
         A short ~160 character description of your post for search engines,
         social media previews, etc.
       image:
-        path: /assets/img/sidebar-bg.jpg
+        path: /assets/img/blog/futuristic-networking-technology.jpeg
     projects:
       layout: project
       description: > 
         A short ~160 character description of your post for search engines,
         social media previews, etc.
       image:
-        path: /assets/img/sidebar-bg.jpg
+        path: /assets/img/blog/futuristic-networking-technology.jpeg
       links:
         - title: Project Link
           url: https://example.com

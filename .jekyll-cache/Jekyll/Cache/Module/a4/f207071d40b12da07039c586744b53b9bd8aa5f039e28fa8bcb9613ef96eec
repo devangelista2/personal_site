@@ -1,0 +1,54 @@
+I"œ
+
+
+
+
+
+<article id="post-teaching-matplotlib" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      <a href="/teaching/2022-09-16-matplotlib/" class="flip-title">
+        Plotting
+      </a>
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2022-09-16T00:00:00+02:00">16 Sep 2022</time> in <a href="/teaching/" class="flip-title">Teaching</a> 
+      </span>
+      
+    </div>
+
+    
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      Introducing Matplotlib, the most famous library when visualization in Python.
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <p>Visualization in Python can be performed by a famous library named <code class="language-plaintext highlighter-rouge">matplotlib</code>, in particular its sub-package <code class="language-plaintext highlighter-rouge">matplotlib.pyplot</code>. Documentation can be found at <a href="https://matplotlib.org/">matplotlib.org</a>.</p>
+
+
+    
+    
+    <footer>
+      <p class="read-more">
+        Continue reading <a class="heading flip-title" href="/teaching/2022-09-16-matplotlib/">Plotting</a>
+
+      </p>
+    </footer>
+  
+</article>
+:ET

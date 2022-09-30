@@ -1,0 +1,54 @@
+I"º
+
+
+
+
+
+<article id="post-teaching-PCA" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      <a href="/teaching/2022-09-25-PCA/" class="flip-title">
+        Dimensionality Reduction
+      </a>
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2022-09-25T00:00:00+02:00">25 Sep 2022</time> in <a href="/teaching/" class="flip-title">Teaching</a> 
+      </span>
+      
+    </div>
+
+    
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      Dimensionality reduction and clustering with Principal Component Analysis (PCA).
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <p>While working with data, it is common to have access to very high-dimensional unstructured informations (e.g. images, sounds, â€¦). To work with them, it is necessary to find a way to project them into a low-dimensional space where data which is semantically similar is close. This approach is called <strong>dimensionality reduction</strong>.</p>
+
+
+    
+    
+    <footer>
+      <p class="read-more">
+        Continue reading <a class="heading flip-title" href="/teaching/2022-09-25-PCA/">Dimensionality Reduction</a>
+
+      </p>
+    </footer>
+  
+</article>
+:ET

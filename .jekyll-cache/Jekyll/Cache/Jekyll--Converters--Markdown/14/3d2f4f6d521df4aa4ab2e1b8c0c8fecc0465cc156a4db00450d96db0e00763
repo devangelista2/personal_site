@@ -1,0 +1,2 @@
+I"í<p>In the following we want to study how to use <code class="language-plaintext highlighter-rouge">numpy</code> and <code class="language-plaintext highlighter-rouge">scipy</code> to solve Linear Systems with Python. Most if the function in Numpy and Scipy for Linear Algebra are contained in the sub-packages <code class="language-plaintext highlighter-rouge">np.linalg</code> and <code class="language-plaintext highlighter-rouge">scipy.linalg</code>, as you will see in the forllowing.</p>
+:ET

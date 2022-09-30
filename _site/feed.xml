@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-09-28T17:45:24+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Davide Evangelista</title><subtitle>A blog dedicated to my research and teaching, mainly based on Machine Learning and Inverse Problems.
+</subtitle><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><entry><title type="html">Why PCA is not sufficient?</title><link href="http://localhost:4000/teaching/2022-09-27-LDA/" rel="alternate" type="text/html" title="Why PCA is not sufficient?" /><published>2022-09-27T00:00:00+02:00</published><updated>2022-09-28T13:36:17+02:00</updated><id>http://localhost:4000/teaching/LDA</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-27-LDA/"><![CDATA[<p>Since PCA is an unsupervised learning technique, the lack of informations due to the fact that it is not using the associated label reduce its ability on observing clusters. Consequently it can be defined Linear Discriminant Analysis (LDA), a supervised version of PCA, whose ability on generating clusters is way higher.</p>
+
+<h2 id="setup-for-lda-implementation">Setup for LDA implementation</h2>
+<p>The main difference between PCA and LDA is the the latter center the dataset by shifting each column by the centroid of each class, instead of using a global centroid of the data. For simplicity, assume we have a dataset</p>
+
+\[X = [x^1 x^2 \dots x^N] \in \mathbb{R}^{d \times N}\]
+
+<p>and an associated label vector</p>
+
+\[Y = [y^1 y^2 \dots y^N]\]
+
+<p>such that \(y^i\) represents the correct class of \(x^i\). Assume that in our problem there are \(K\) classes \(C_1, \dots, C_K\) and define \(I_k = [i_1, \dots, i_{N_k}]\) as the vector of the indices corresponding to the columns of $X$ associated with the class \(k\) (\(N_k\) is the number of elements lying in the class $k$). To simplify the discussion, assume that our dataset is ordered as</p>
+
+\[X = [X_1 X_2 \dots X_K]\]
+
+<p>where \(X_k\) contains each datapoint such that the corresponding class is \(k\). Now, for each class \(k = 1, \dots, K\) define the class centroid</p>
+
+\[c_k(X) = \frac{1}{N_k} \sum_{i \in I_k} x^i\]
+
+<p>and the global centroid</p>
+
+\[c(X) = \frac{1}{N} \sum_{i=1}^N x^i\]
+
+<p>For any \(k = 1, \dots, K\), define the centered matrix for each class</p>
+
+\[X_{k, c} = X_k - c_k(X_k)\]
+
+<p>and, by joining \(X_{k, c}\) together for any \(k\), we get</p>
+
+\[X_w = [X_{1, c} X_{2, c} \dots X_{K, c}]\]
+
+<p>From \(X_w\), we can define the <strong>within-cluster scatter matrix</strong></p>
+
+\[S_w = X_w X_w^T\]
+
+<p>representing the <em>correlation matrix</em> for points inside of each cluster.</p>
+
+<p>Consequently, define</p>
+
+\[\bar{X}_k = [c_k c_k c_k \dots c_k] \in \mathbb{R}^{d \times N}\]
+
+\[\bar{X} = [\bar{X}_1 \bar{X}_2 \dots \bar{X}_K]\]
+
+<p>and its centered version</p>
+
+\[\bar{X}_c = \bar{X} - c(X)\]
+
+<p>Finally, we define the <strong>between clusters scattering matrix</strong></p>
+
+\[S_b = \bar{X}_c \bar{X}_c^T\]
+
+<p>This concludes the setup part.</p>
+
+<h2 id="idea-and-implementation">Idea and Implementation</h2>
+<p>Given the two matrices \(S_w\) and \(S_b\) defined above, we observe that \(S_w\) is symmetrical, since \(S_w^T = (X_w X_w^T)^T = X_w X_w^T = S_w\). If \(S_w\) is also positive definite, you studied that we can compute the Cholesky decomposition of it, i.e. we can decompose</p>
+
+\[S_w = L^T L\]
+
+<p>where \(L \in \mathbb{R}^{d \times d}\) is a lower-triangular matrix.</p>
+
+<p>If \(S_w\) is not positive definite, we can make it positive definite by doing</p>
+
+\[S_w = S_w + \epsilon I\]
+
+<p>where $\epsilon \approx 10^{-6}$ is a small value. A matrix like that will always be positive definite.</p>
+
+<p>Now, given a number \(k\) (representing the dimension on which we want to project), compute the matrix \(W \in \mathbb{R}^{d \times k}\), whose column are the first $k$ eigenvectors of \(L^{-T}S_bL^T\).</p>
+
+<p>Finally, if</p>
+
+\[Q = L^{-1} W\]
+
+<p>then \(Q^T \in \mathbb{R}^{k \times d}\) will be the projection matrix of LDA.</p>
+
+<h2 id="implementation">Implementation</h2>
+<p>The implementation simply follows what we just described.</p>
+
+<ul>
+  <li>Given the input data \(X\) and the labels \(Y\);</li>
+  <li>Compute \(S_w\) and \(S_b\) as described above;</li>
+  <li>If possible, compute the Cholesky decomposition of \(S_w = L^T L\), if not, compute the Cholesky decomposition of \(S_w + \epsilon I = L^T L\);</li>
+  <li>Find the first \(k\) eigenvectors of \(L^{-T}S_bL^T\) and collect them in a matrix \(W\);</li>
+  <li>Compute \(Q = L^{-1} W\) and \(Q^T\).</li>
+  <li>Since \(Q^T\) is the projection matrix, we can project \(X\) into \(Z\) as \(Z = Q^T X\).</li>
+</ul>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[Clustering introduction with Linear Discriminant Analysis (LDA)]]></summary></entry><entry><title type="html">A (very short) introduction to Machine Learning</title><link href="http://localhost:4000/research/2022-09-26-short_introduction_to_ML/" rel="alternate" type="text/html" title="A (very short) introduction to Machine Learning" /><published>2022-09-26T00:00:00+02:00</published><updated>2022-09-28T17:44:31+02:00</updated><id>http://localhost:4000/research/short_introduction_to_ML</id><content type="html" xml:base="http://localhost:4000/research/2022-09-26-short_introduction_to_ML/"><![CDATA[<blockquote>
+  <p><strong><em>Definition:</em></strong> Machine Learning (ML) is the set of all the techniques and algorithms able to extract knowledge from the data, and use that knowledge to make accurate previsions.</p>
+</blockquote>
+
+<p>Following the definition, it is clear that a good Machine Learning algorithm is always developed by following some steps:</p>
+
+<ul>
+  <li><strong>Understanding:</strong> Understand the task (e.g.  what do we need? what are the informations we are able to collect to answer the question we are asking for?);</li>
+  <li><strong>Collection:</strong> Collect a big set of data, containing enough informations to be able to use them to achieve the task above;</li>
+  <li><strong>Design:</strong> Design the Machine Learning algorithm, based on the knowledge we have on the studied problem;</li>
+  <li><strong>Training:</strong> Train the algorithm on the collected data, trying to minimize the prediction error on the given dataset;</li>
+  <li><strong>Tuning:</strong> Eventually tune some parameters of the model (a ML algorithm is usually referred to as <em>model</em>) to improve the predictions;</li>
+  <li><strong>Testing:</strong> Test the algorithm on new data, verifying its ability on making predictions;</li>
+</ul>
+
+<p>We’re going to investigate each of those steps more deeply in the following.</p>
+
+<h2 id="understanding">Understanding</h2>
+<p>Assume we want to solve a given problem. Mathematically, the problem we aim to solve can be modelled as an (unknown) function $f(x)$, taking as input a vector $x \in \mathbb{R}^d$ containing the informations we are able to collect and mapping them (possibly <strong>stocastically</strong>) to the task $y = f(x)$. When this is the case, $x$ is usually called <em>input vector</em> or alternatively <em>feature vector</em>, while $y = f(x)$ is the <em>target</em> (equivalently <em>label</em> or <em>output</em>).</p>
+
+<p><em>Solving</em> the problem means being able to approximate $f(x)$ as good as possible with a model (that we will always indicate as $f_\theta (x)$, $\theta$ being the set of parameters defining it), such that</p>
+
+\[f_\theta(x) \approx f(x) \qquad \forall x \in \mathbb{R}^d\]
+
+<h3 id="question-1-is-it-learnable">Question 1: Is it learnable?</h3>
+<p>A problem $y = f(x)$ can be solved by a ML algorithm if and only if there <strong>exists</strong> a relationship between $x$ and $y$. For example, we cannot expect to predict the future weather in a particular position by using informations about the stock price of a particular company. In that situation, the input and the output are clearly <strong>indepdendent</strong>, and there is no change to learning anything from one using the other.</p>
+
+<p>Consequently, the first point in designing a ML algorithm is to understand <em>if</em> there exists a correlation between the input and the output of the given problem. When this is the case, we say that the problem is <strong>learnable</strong>.</p>
+
+<blockquote>
+  <p><strong>Machine Learning</strong> is about understanding correlations (patterns).</p>
+</blockquote>
+
+<h3 id="question-2-it-is-possible-to-collect-them">Question 2: It is possible to collect them?</h3>
+<p>Assume that the problem $y = f(x)$ is learnable. We need to understand if we can physically collect enough data $x$ to be able to understand the relationship between him and its corresponding $y$.</p>
+
+<p>For example, if we want to use ML to make cancer diagnosis on patients, clearly the best way to do that is to use as input the clinical results of any possible medical exam on the patient. Of course, even if this will work well in practice, it is not possible (and expecially not ethic) to test the patient with thousands of exams for a single diagnosis.</p>
+
+<p>Moreover, to train a good ML model, we will need thousands (sometimes milions) of datapoints, and it is not always possible to scale our problem to be able to collect enough data to solve it.</p>
+
+<blockquote>
+  <p>Collecting data requires <strong>efficiency</strong> and <strong>scalability</strong> of the problem.</p>
+</blockquote>
+
+<h2 id="collection">Collection</h2>
+<p>Collecting data is usually the hardest part in the design of a Machine Learning production. In fact, given that our problem $y = f(x)$ is solvable and that it is theoretically possible to collect enough data about it, it is not always that easy in practice.</p>
+
+<p>In particular, some data requires <em>time</em> to be collected (this is an example when working in biological or medical applications), and collect good quality data is hard. Indeed, we indeally want to use a clean dataset, where all the informations are presents, there are no missing values (usually referred to as <code class="language-plaintext highlighter-rouge">NaN</code>) and the informations does not contain noise. Most of the time, this is hopeless, and we will need to develop algorithms to standardize and clean up the data. The set of all those techniques is called <em>data cleaning</em>, and its study is beyond the scope of this course.</p>
+
+<h3 id="kaggle">Kaggle</h3>
+<p>Luckily, for most of the tasks you can think of, you can find datasets on internet. For example, websites like <a href="https://www.kaggle.com/">Kaggle</a> and <a href="https://datasetsearch.research.google.com/">Google Datasets</a> can be helpful for that.</p>
+
+<h3 id="data-loading-with-pandas">Data loading with pandas</h3>
+<p>At the end of the introductory post we introduced the Python library <code class="language-plaintext highlighter-rouge">pandas</code>, useful to work with data.</p>
+
+<p>In particular, most of the data can be found in the <code class="language-plaintext highlighter-rouge">.csv</code> format, and <code class="language-plaintext highlighter-rouge">pandas</code> contains functions to read <code class="language-plaintext highlighter-rouge">.csv</code> files and work with it. Please refer to the introductory post for more informations about it.</p>
+
+<h3 id="datasets-and-numpy-arrays">Datasets and numpy arrays</h3>
+<p><code class="language-plaintext highlighter-rouge">.csv</code> datasets are great. Working with them, we will always have all the informations correctly labeled and in-place. Unfortunately, from a mathematical point of view, this is a really sub-optimal way of working with data. In particular, working with strings is usually a pain and it is mandatory to setup an algorithm converting strings into numbers (an <em>encoding</em> algorithm), and columns and rows names are unnecessary while designing learning algorithms.</p>
+
+<p>Consequently, we will always convert datasets into matrices (into the form of <code class="language-plaintext highlighter-rouge">numpy</code> arrays), before starting working with them. This is performed by two successive steps:</p>
+
+<ol>
+  <li>Encoding strings into numbers.</li>
+  <li>Converting the resulting dataset into a numpy array.</li>
+</ol>
+
+<hr />
+
+<p>The idea of encoding algorithms is that in a dataset, the set of possible values a string can have is limited (e.g. in a dataset containing weather informations, we can say that the climate is {raining, sunny, cloudy, snowy}, thus we have only 4 possible values for the string). Consequently, the idea is to consider each one of the possible values as a <strong>class</strong>.</p>
+
+<p>Assume our dataset has $K$ classes for a specific feature, let’s say ${ C_1, C_2, \dots, C_K }$ is the set of all the classes. Then, there are two mainly used encoding algorithms:</p>
+
+<ul>
+  <li><strong>Integer encoding:</strong> Each class $C_k$, $k = 1, \dots, K$, is simply mapped to its index $k$ (<em>Warning:</em> this method creates a usually unintended ordering on the classes, i.e. $C_k \leq C_j$ if $i &lt; j$). In Python, this function is implemented by the function <code class="language-plaintext highlighter-rouge">sklearn.preprocessing.LabelEncoder()</code> from <code class="language-plaintext highlighter-rouge">sklearn</code>, a famous library performing ML operations.</li>
+  <li><strong>One-hot-encoding:</strong> Each class $C_k$ is mapped to the $K$-dimensional canonical vector $e_k$, where $e_i$ is a vector of all zeros exept for the $k$-th element, which is a 1 (<em>Advantages:</em> this way we can define the concept of being partially in a class). In Python, this function is implemented by the function <code class="language-plaintext highlighter-rouge">sklearn.preprocessing.OneHotEncoder()</code>.</li>
+</ul>
+
+<hr />
+
+<p>After the encoding step, the dataset is simply converted to a numpy array with the <code class="language-plaintext highlighter-rouge">np.array()</code> function.</p>
+
+<p>The result of this procedure is a matrix</p>
+
+\[X = [ x^1 \quad x^2 \quad \dots \quad x^N ] \in \mathbb{R}^{d \times N}\]
+
+<p>where each column $x^i \in \mathbb{R}^d$ represents a datapoint with $d$ features and $N$ is the number of datapoints. The corresponding labels $y^i = f(x^i)$ for each datapoint are collected into a vector $Y = [y^1, y^2, \dots, y^N]^T \in \mathbb{R}^N$</p>
+
+<h2 id="design">Design</h2>
+<p>Designing a ML model is hard and beyond the scope of this course. To us, it is sufficient to understand the main classification in which algorithms are categorized: supervised and unsupervised learning.</p>
+
+<h3 id="supervised-learning">Supervised Learning</h3>
+<p>In Supervised Learning (SL), we are given a dataset composed by a set of inputs $X \in \mathbb{R}^{d \times N}$ and the corresponding labels $Y \in \mathbb{R}^N$. The idea of SL techniques is to use informations contained in $X$ and $Y$ to learn structures in data such that, after the training, can estimate new values of $y = f(x)$ given a new $x \in \mathbb{R}^d$.</p>
+
+<h3 id="unsupervised-learning">Unsupervised Learning</h3>
+<p>In Unsupervised Learning (UL), we are given a dataset composed by only the inputs $X \in \mathbb{R}^{d \times N}$, without any corresponding labels. The task of UL techniques is to learn pattern present in data with the intent to <em>classify</em> new datum $x \in \mathbb{R}^d$ by retrieving its patterns.</p>
+
+<h2 id="training">Training</h2>
+<p>Training is the easiest part in the design of ML algorithms. Here, we just use informations contained into the data we have to let our model learn the patterns required to make accurate predictions. Since we are doing an experiment soon, it will be clearer how everything works.</p>
+
+<h2 id="tuning">Tuning</h2>
+<p>Every ML algorithms have a limited number of parameters the user have to set. Generally, those parameters can changes the flexibility of the model, making it more or less flexible depending on the task.</p>
+
+<p>Tuning those parameters is important to improve the accuracy of the algorithm. This is mainly a trial-and-error procedure, where the user try changing the parameters (usually, with <em>knowledge</em> on what they do), and train again the model, check the performance and change the parameters again, until the models does not get good results.</p>
+
+<p>The concept of flexibility is strongly related to the concept of <strong>overfitting</strong> and <strong>underfitting</strong>.</p>
+
+<h2 id="testing">Testing</h2>
+<p>Testing the prediction ability of a ML model on the same dataset on which it has been trained is unfair. Indeed, on those data the model already observed the real outcome, and a model performing well on the <em>training set</em> potentially just memorized each informations contained in the set, without <strong>understanding any knowledge</strong>. For that reason, it is important to keep a portion of the dataset unused into the Training and Tuning phases to be used to test the model. In particular, when we have $N$ available data, it is common to select a number $N_{train} &lt; N$ and randomly extract $N_{train}$ random samples from $X$ and use only those data for the training and tuning. The remaining $N_{test} = N - N_{train}$ data can be used to test it.</p>
+
+<p>Test usually happens by choosing an accuracy function $\ell(y, y’)$ and evaluating the mean value of $\ell(y, y’)$ over the test set, where $\ell(y, y’)$ is computed between the prediction of the trained model $y = f_\theta(x)$ and the true label $y’ = f(x)$ for the same datum $x \in \mathbb{R}^d$.</p>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="research" /><summary type="html"><![CDATA[An introduction to Machine Learning (ML).]]></summary></entry><entry><title type="html">A (very short) introduction to Machine Learning</title><link href="http://localhost:4000/teaching/2022-09-26-short_introduction_to_ML/" rel="alternate" type="text/html" title="A (very short) introduction to Machine Learning" /><published>2022-09-26T00:00:00+02:00</published><updated>2022-09-28T17:44:31+02:00</updated><id>http://localhost:4000/teaching/short_introduction_to_ML</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-26-short_introduction_to_ML/"><![CDATA[<blockquote>
+  <p><strong><em>Definition:</em></strong> Machine Learning (ML) is the set of all the techniques and algorithms able to extract knowledge from the data, and use that knowledge to make accurate previsions.</p>
+</blockquote>
+
+<p>Following the definition, it is clear that a good Machine Learning algorithm is always developed by following some steps:</p>
+
+<ul>
+  <li><strong>Understanding:</strong> Understand the task (e.g.  what do we need? what are the informations we are able to collect to answer the question we are asking for?);</li>
+  <li><strong>Collection:</strong> Collect a big set of data, containing enough informations to be able to use them to achieve the task above;</li>
+  <li><strong>Design:</strong> Design the Machine Learning algorithm, based on the knowledge we have on the studied problem;</li>
+  <li><strong>Training:</strong> Train the algorithm on the collected data, trying to minimize the prediction error on the given dataset;</li>
+  <li><strong>Tuning:</strong> Eventually tune some parameters of the model (a ML algorithm is usually referred to as <em>model</em>) to improve the predictions;</li>
+  <li><strong>Testing:</strong> Test the algorithm on new data, verifying its ability on making predictions;</li>
+</ul>
+
+<p>We’re going to investigate each of those steps more deeply in the following.</p>
+
+<h2 id="understanding">Understanding</h2>
+<p>Assume we want to solve a given problem. Mathematically, the problem we aim to solve can be modelled as an (unknown) function $f(x)$, taking as input a vector $x \in \mathbb{R}^d$ containing the informations we are able to collect and mapping them (possibly <strong>stocastically</strong>) to the task $y = f(x)$. When this is the case, $x$ is usually called <em>input vector</em> or alternatively <em>feature vector</em>, while $y = f(x)$ is the <em>target</em> (equivalently <em>label</em> or <em>output</em>).</p>
+
+<p><em>Solving</em> the problem means being able to approximate $f(x)$ as good as possible with a model (that we will always indicate as $f_\theta (x)$, $\theta$ being the set of parameters defining it), such that</p>
+
+\[f_\theta(x) \approx f(x) \qquad \forall x \in \mathbb{R}^d\]
+
+<h3 id="question-1-is-it-learnable">Question 1: Is it learnable?</h3>
+<p>A problem $y = f(x)$ can be solved by a ML algorithm if and only if there <strong>exists</strong> a relationship between $x$ and $y$. For example, we cannot expect to predict the future weather in a particular position by using informations about the stock price of a particular company. In that situation, the input and the output are clearly <strong>indepdendent</strong>, and there is no change to learning anything from one using the other.</p>
+
+<p>Consequently, the first point in designing a ML algorithm is to understand <em>if</em> there exists a correlation between the input and the output of the given problem. When this is the case, we say that the problem is <strong>learnable</strong>.</p>
+
+<blockquote>
+  <p><strong>Machine Learning</strong> is about understanding correlations (patterns).</p>
+</blockquote>
+
+<h3 id="question-2-it-is-possible-to-collect-them">Question 2: It is possible to collect them?</h3>
+<p>Assume that the problem $y = f(x)$ is learnable. We need to understand if we can physically collect enough data $x$ to be able to understand the relationship between him and its corresponding $y$.</p>
+
+<p>For example, if we want to use ML to make cancer diagnosis on patients, clearly the best way to do that is to use as input the clinical results of any possible medical exam on the patient. Of course, even if this will work well in practice, it is not possible (and expecially not ethic) to test the patient with thousands of exams for a single diagnosis.</p>
+
+<p>Moreover, to train a good ML model, we will need thousands (sometimes milions) of datapoints, and it is not always possible to scale our problem to be able to collect enough data to solve it.</p>
+
+<blockquote>
+  <p>Collecting data requires <strong>efficiency</strong> and <strong>scalability</strong> of the problem.</p>
+</blockquote>
+
+<h2 id="collection">Collection</h2>
+<p>Collecting data is usually the hardest part in the design of a Machine Learning production. In fact, given that our problem $y = f(x)$ is solvable and that it is theoretically possible to collect enough data about it, it is not always that easy in practice.</p>
+
+<p>In particular, some data requires <em>time</em> to be collected (this is an example when working in biological or medical applications), and collect good quality data is hard. Indeed, we indeally want to use a clean dataset, where all the informations are presents, there are no missing values (usually referred to as <code class="language-plaintext highlighter-rouge">NaN</code>) and the informations does not contain noise. Most of the time, this is hopeless, and we will need to develop algorithms to standardize and clean up the data. The set of all those techniques is called <em>data cleaning</em>, and its study is beyond the scope of this course.</p>
+
+<h3 id="kaggle">Kaggle</h3>
+<p>Luckily, for most of the tasks you can think of, you can find datasets on internet. For example, websites like <a href="https://www.kaggle.com/">Kaggle</a> and <a href="https://datasetsearch.research.google.com/">Google Datasets</a> can be helpful for that.</p>
+
+<h3 id="data-loading-with-pandas">Data loading with pandas</h3>
+<p>At the end of the introductory post we introduced the Python library <code class="language-plaintext highlighter-rouge">pandas</code>, useful to work with data.</p>
+
+<p>In particular, most of the data can be found in the <code class="language-plaintext highlighter-rouge">.csv</code> format, and <code class="language-plaintext highlighter-rouge">pandas</code> contains functions to read <code class="language-plaintext highlighter-rouge">.csv</code> files and work with it. Please refer to the introductory post for more informations about it.</p>
+
+<h3 id="datasets-and-numpy-arrays">Datasets and numpy arrays</h3>
+<p><code class="language-plaintext highlighter-rouge">.csv</code> datasets are great. Working with them, we will always have all the informations correctly labeled and in-place. Unfortunately, from a mathematical point of view, this is a really sub-optimal way of working with data. In particular, working with strings is usually a pain and it is mandatory to setup an algorithm converting strings into numbers (an <em>encoding</em> algorithm), and columns and rows names are unnecessary while designing learning algorithms.</p>
+
+<p>Consequently, we will always convert datasets into matrices (into the form of <code class="language-plaintext highlighter-rouge">numpy</code> arrays), before starting working with them. This is performed by two successive steps:</p>
+
+<ol>
+  <li>Encoding strings into numbers.</li>
+  <li>Converting the resulting dataset into a numpy array.</li>
+</ol>
+
+<hr />
+
+<p>The idea of encoding algorithms is that in a dataset, the set of possible values a string can have is limited (e.g. in a dataset containing weather informations, we can say that the climate is {raining, sunny, cloudy, snowy}, thus we have only 4 possible values for the string). Consequently, the idea is to consider each one of the possible values as a <strong>class</strong>.</p>
+
+<p>Assume our dataset has $K$ classes for a specific feature, let’s say ${ C_1, C_2, \dots, C_K }$ is the set of all the classes. Then, there are two mainly used encoding algorithms:</p>
+
+<ul>
+  <li><strong>Integer encoding:</strong> Each class $C_k$, $k = 1, \dots, K$, is simply mapped to its index $k$ (<em>Warning:</em> this method creates a usually unintended ordering on the classes, i.e. $C_k \leq C_j$ if $i &lt; j$). In Python, this function is implemented by the function <code class="language-plaintext highlighter-rouge">sklearn.preprocessing.LabelEncoder()</code> from <code class="language-plaintext highlighter-rouge">sklearn</code>, a famous library performing ML operations.</li>
+  <li><strong>One-hot-encoding:</strong> Each class $C_k$ is mapped to the $K$-dimensional canonical vector $e_k$, where $e_i$ is a vector of all zeros exept for the $k$-th element, which is a 1 (<em>Advantages:</em> this way we can define the concept of being partially in a class). In Python, this function is implemented by the function <code class="language-plaintext highlighter-rouge">sklearn.preprocessing.OneHotEncoder()</code>.</li>
+</ul>
+
+<hr />
+
+<p>After the encoding step, the dataset is simply converted to a numpy array with the <code class="language-plaintext highlighter-rouge">np.array()</code> function.</p>
+
+<p>The result of this procedure is a matrix</p>
+
+\[X = [ x^1 \quad x^2 \quad \dots \quad x^N ] \in \mathbb{R}^{d \times N}\]
+
+<p>where each column $x^i \in \mathbb{R}^d$ represents a datapoint with $d$ features and $N$ is the number of datapoints. The corresponding labels $y^i = f(x^i)$ for each datapoint are collected into a vector $Y = [y^1, y^2, \dots, y^N]^T \in \mathbb{R}^N$</p>
+
+<h2 id="design">Design</h2>
+<p>Designing a ML model is hard and beyond the scope of this course. To us, it is sufficient to understand the main classification in which algorithms are categorized: supervised and unsupervised learning.</p>
+
+<h3 id="supervised-learning">Supervised Learning</h3>
+<p>In Supervised Learning (SL), we are given a dataset composed by a set of inputs $X \in \mathbb{R}^{d \times N}$ and the corresponding labels $Y \in \mathbb{R}^N$. The idea of SL techniques is to use informations contained in $X$ and $Y$ to learn structures in data such that, after the training, can estimate new values of $y = f(x)$ given a new $x \in \mathbb{R}^d$.</p>
+
+<h3 id="unsupervised-learning">Unsupervised Learning</h3>
+<p>In Unsupervised Learning (UL), we are given a dataset composed by only the inputs $X \in \mathbb{R}^{d \times N}$, without any corresponding labels. The task of UL techniques is to learn pattern present in data with the intent to <em>classify</em> new datum $x \in \mathbb{R}^d$ by retrieving its patterns.</p>
+
+<h2 id="training">Training</h2>
+<p>Training is the easiest part in the design of ML algorithms. Here, we just use informations contained into the data we have to let our model learn the patterns required to make accurate predictions. Since we are doing an experiment soon, it will be clearer how everything works.</p>
+
+<h2 id="tuning">Tuning</h2>
+<p>Every ML algorithms have a limited number of parameters the user have to set. Generally, those parameters can changes the flexibility of the model, making it more or less flexible depending on the task.</p>
+
+<p>Tuning those parameters is important to improve the accuracy of the algorithm. This is mainly a trial-and-error procedure, where the user try changing the parameters (usually, with <em>knowledge</em> on what they do), and train again the model, check the performance and change the parameters again, until the models does not get good results.</p>
+
+<p>The concept of flexibility is strongly related to the concept of <strong>overfitting</strong> and <strong>underfitting</strong>.</p>
+
+<h2 id="testing">Testing</h2>
+<p>Testing the prediction ability of a ML model on the same dataset on which it has been trained is unfair. Indeed, on those data the model already observed the real outcome, and a model performing well on the <em>training set</em> potentially just memorized each informations contained in the set, without <strong>understanding any knowledge</strong>. For that reason, it is important to keep a portion of the dataset unused into the Training and Tuning phases to be used to test the model. In particular, when we have $N$ available data, it is common to select a number $N_{train} &lt; N$ and randomly extract $N_{train}$ random samples from $X$ and use only those data for the training and tuning. The remaining $N_{test} = N - N_{train}$ data can be used to test it.</p>
+
+<p>Test usually happens by choosing an accuracy function $\ell(y, y’)$ and evaluating the mean value of $\ell(y, y’)$ over the test set, where $\ell(y, y’)$ is computed between the prediction of the trained model $y = f_\theta(x)$ and the true label $y’ = f(x)$ for the same datum $x \in \mathbb{R}^d$.</p>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[An introduction to Machine Learning (ML).]]></summary></entry><entry><title type="html">Dimensionality Reduction</title><link href="http://localhost:4000/teaching/2022-09-25-PCA/" rel="alternate" type="text/html" title="Dimensionality Reduction" /><published>2022-09-25T00:00:00+02:00</published><updated>2022-09-28T13:29:59+02:00</updated><id>http://localhost:4000/teaching/PCA</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-25-PCA/"><![CDATA[<p>While working with data, it is common to have access to very high-dimensional unstructured informations (e.g. images, sounds, …). To work with them, it is necessary to find a way to project them into a low-dimensional space where data which is semantically similar is close. This approach is called <strong>dimensionality reduction</strong>.</p>
+
+<p>For example, assume our data can be stored in an $d \times N$ array,
+\(X = [ x^1 x^2 \dots x^N ] \in \mathbb{R}^{d \times N}\)
+where each datapoint $x^j \in \mathbb{R}^d$. The idea of dimensionality reduction techniques in ML is to find a projector operator $P: \mathbb{R}^d \to \mathbb{R}^k$, with $k \ll d$, such that in the projected space $P(x)$, images semantically similar are close together. If the points in a projected space forms isolated popoulations such that <em>inside</em> of each popoulation the points are close, while the distance <em>between</em> popoulations is large, we call them <strong>clusters</strong>. A clusering algorithm is an algorithm which is able to find clusters from high-dimensional data.</p>
+
+<h2 id="principal-component-analysis-pca">Principal Component Analysis (PCA)</h2>
+<p>Principal Componenti Analyisis (PCA) is probabily the simplest yet effective technique to perform dimensionality reduction and clustering. It is an unsupervised algorithm, thus it does not require any label.</p>
+
+<p>The idea is the following: consider a dataset $X \in \mathbb{R}^{d \times N}$ of high-dimensional data and assume we want to project it into a low-dimensional space $\mathbb{R}^k$. Define</p>
+
+\[Z = [z^1 z^2 \dots z^N] \in \mathbb{R}^{k \times N}\]
+
+<p>the projected version of $X$. We want to find a matrix $P \in \mathbb{R}^{k \times d}$ such that $Z = PX$, with the constraint that in the projected space we want to keep as much information as possible from the original data $X$.</p>
+
+<p>You already studied that, when you want to project a matrix by keeping informations, a good idea is to use the Singular Value Decomposition (SVD) of it and, in particular, the Truncated SVD (TSVD). Let $X \in \mathbb{R}^{d \times N}$, then</p>
+
+\[X = U \Sigma V^T\]
+
+<p>is the SVD of $X$, where $U \in \mathbb{R}^{d \times d}$, $V \in \mathbb{R}^{N \times N}$ are orthogonal matrices ($U^T U = U U^T = I$ and $V V^T = V^T V = I$), while $\Sigma \in \mathbb{R}^{d \times N}$ is a diagonal matrix whose diagonal elements $\sigma_i$ are the singular values of $X$, in decreasing order ($\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_d$). Since the singular values represents the <em>quantity of informations</em> contained in the corresponding singular vectors, keeping the first $k$ singular values and vectors can be the solution to our projection problem. Indeed, given $k &lt; d$, we define the Truncated SVD of $X$ as</p>
+
+\[X_k = U_k \Sigma_k V^T_k\]
+
+<p>where $U_k \in \mathbb{R}^{d \times k}$, $\Sigma_k \in \mathbb{R}^{k \times k}$, and $V_k \in \mathbb{R}^{k \times N}$.</p>
+
+<p>The PCA use this idea and defines the projection matrix as $P = U_k$, and consequently,</p>
+
+\[Z = U_k X\]
+
+<p>is the projected space. Here, the columns of $U_k$ are called <strong>feature vectors</strong>, while the columns of $Z$ are the <strong>principal components</strong> of $X$.</p>
+
+<h2 id="implementation-of-pca">Implementation of PCA</h2>
+<p>To implement PCA, we first need to <em>center</em> the data. This can be done by defining its centroid.</p>
+
+<blockquote>
+  <p><strong><em>Centroid:</em></strong> Given a set
+ \(X = [x^1 x^2 \dots x^N]\)
+its <em>centroid</em> is defined to be
+\(c(X) = \frac{1}{N} \sum_{i=1}^N x^i\)</p>
+</blockquote>
+
+<p>Thus, the implementation of PCA is as follows:</p>
+
+<ul>
+  <li>Consider the dataset $X$;</li>
+  <li>Compute the centered version of $X$ as $X_c = X - c(X)$, where the subtraction between matrix and vector is executed column-by-column;</li>
+  <li>Compute the SVD of $X_c$, $X_c = U\Sigma V^T$;</li>
+  <li>Given $k &lt; n$, compute the Truncated SVD of $X_c$: $X_{c, k} = U_k \Sigma_k V_k^T$;</li>
+  <li>Compute the projected dataset $Z_k = U_k^T X_c$;</li>
+</ul>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[Dimensionality reduction and clustering with Principal Component Analysis (PCA).]]></summary></entry><entry><title type="html">Introduction</title><link href="http://localhost:4000/teaching/2022-09-17-linear_systems/" rel="alternate" type="text/html" title="Introduction" /><published>2022-09-17T00:00:00+02:00</published><updated>2022-09-28T13:29:09+02:00</updated><id>http://localhost:4000/teaching/linear_systems</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-17-linear_systems/"><![CDATA[<p>In the following we want to study how to use <code class="language-plaintext highlighter-rouge">numpy</code> and <code class="language-plaintext highlighter-rouge">scipy</code> to solve Linear Systems with Python. Most if the function in Numpy and Scipy for Linear Algebra are contained in the sub-packages <code class="language-plaintext highlighter-rouge">np.linalg</code> and <code class="language-plaintext highlighter-rouge">scipy.linalg</code>, as you will see in the forllowing.</p>
+
+<p>To fix the notation, given a matrix $A \in \mathbb{R}^{n \times n}$ and a vector $y \in \mathbb{R}^n$, <em>solving</em> a linear system means finding (when exists) a vector $x \in \mathbb{R}^n$ such that it solves</p>
+
+\[Ax = y\]
+
+<p>This is not hard to do in <code class="language-plaintext highlighter-rouge">numpy</code>, since it implements a function <code class="language-plaintext highlighter-rouge">np.linalg.solve</code>, taking as input a 2-dimensional array <code class="language-plaintext highlighter-rouge">A</code> and a 1-dimensional array <code class="language-plaintext highlighter-rouge">y</code>, and returns the solution <code class="language-plaintext highlighter-rouge">x</code> to the linear system. In particular:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Generates the problem
+A = np.array([[1, 1, 1], [2, 1, 2], [0, 0, 1]])
+y = np.array([0, 1, 0])
+
+# Solve the system
+x_sol = np.linalg.solve(A, y)
+print(f"The solution is {x_sol}.")
+</code></pre></div></div>
+
+<h2 id="testing-the-accuracy">Testing the accuracy</h2>
+<p>You already studied that, when the matrix $A$ is ill-conditioned, the solution of a linear system won’t be correct, since the small perturbations on $y$ introduced by the floating point system will be amplified and the corresponding solution will be drammatically distant to the true solution. To check how accurate our computed solution is to the true solution of the system (i.e. to quantify the amplification of the perturbation on the data), it is common to use the relative error, which is defined as</p>
+
+\[E(x_{true}, x) = \frac{|| x_{true} - x ||_2}{|| x_{true} ||_2}\]
+
+<p>Clearly, the problem is that if our algorithm fails in recovering the true solution due to the ill-conditioning of the system matrix $A$, how can we compute the true solution $x_{true}$, required to compute $E(x_{true}, x)$? The solution is to build a <strong>test problem</strong>.</p>
+
+<h3 id="creating-a-test-problem">Creating a Test Problem</h3>
+<p>Consider a matrix $A \in \mathbb{R}^{n \times n}$ and assume we want to test the accuracy of an algorithm solving systems involving $A$. Fix an $n$-dimensional vector $x_{true} \in \mathbb{R}^n$, and compute $y = Ax_{true}$. Clearly, this procedure defines a linear system</p>
+
+\[Ax = y\]
+
+<p>of which we know that $x_{true}$ is a solution, since we built the term $b$ accordingly. Now, when we apply our algorithm to that linear system, we get a solution $x_{sol}$, approximately solving $Ax = y$. Given that, we can always compute the relative error $E(x_{true}, x_{sol})$ asssociated to the solution obtained by the algorithm. In numpy, this can be simply done as</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+
+# Setting up the dimension
+n = 10
+
+# Creating the test problem
+A = np.random.randn(n, n) # n x n random matrix
+x_true = np.ones((n, ))   # n-dimensional vector of ones
+
+y = A @ x_true # Compute the term y s.t. x_true is a sol.
+
+# Solving the system with numpy
+x_sol = np.solve(A, y)
+
+# Computing the accuracy
+E_rel = np.linalg.norm(x_true - x_sol, 2) / np.linalg.norm(x_true, 2)
+print(f"The relative error is {E_rel}")
+</code></pre></div></div>
+
+<h2 id="condition-number">Condition number</h2>
+<p>You should already know that the conditioning of an $n \times n$ matrix $A$ can be quantified by a term called <strong>condition number</strong> which, whenever $A$ is invertible, is defined as</p>
+
+\[k_p(A) = ||A||_p || A^{-1} ||_p\]
+
+<p>Where $p \geq 1$ idenfities the norm on which the condition number is computed.</p>
+
+<p>An invertible matrix $A$ is said to be ill-conditioned when its condition number grows exponentially with the dimension of the problem, $n$.</p>
+
+<p>The condition number is related to the accuracy of the computed solution of a linear system by the following inequality</p>
+
+\[\frac{|| \delta x ||}{||x||} \leq k(A) \Bigl( \frac{||\delta A||}{|| A ||} + \frac{|| \delta y ||}{|| y ||} \Bigr)\]
+
+<p>which implies that the relative error on the computed solution is big whenever $k(A)$ is big. Moreover, note that as a consequence of the formula above, the accuracy of a computed solution is partially a proprierty of the condition number of $A$ itself, meaning that <em>no algorithm</em> is able to compute an accurate solution to an ill-conditioned system.</p>
+
+<p>Computing the $p$-condition number of a matrix $A$ in Numpy is trivial, just use the function <code class="language-plaintext highlighter-rouge">np.linalg.cond(A, p)</code> to compute $k_p(A)$.</p>
+
+<h2 id="solving-linear-system-by-matrix-splitting">Solving Linear System by Matrix Splitting</h2>
+<p>As you should know, when the matrix $A$ is unstructured, the linear system $Ax = y$ can be efficiently solved by using <a href="https://en.wikipedia.org/wiki/LU_decomposition">LU Decomposition</a>. In particular, with Gaussian elimination algorithm, one can factorize any non-singular matrix $A \in \mathbb{R}^{n \times n}$ into:</p>
+
+\[A = PLU\]
+
+<p>where $L \in \mathbb{R}^{n \times n}$ is a lower-triangular matrix, $U \in \mathbb{R}^{n \times n}$ is an upper-triangular matrix with all ones on the diagonal and $P \in \mathbb{R}^{n \times n}$ is a permutation matrix (i.e. a matrix obtained by permutating the rows of the identity matrix). If the decomposition is computed without pivoting, the permutation matrix equals the identity. Note that the assumption that $A$ is non-singular is not restrictive, since it is a necessary condition for the solvability of $Ax = y$.</p>
+
+<p>Since $P$ is an orthogonal matrix, $P^{-1} = P^T$, thus</p>
+
+\[A = PLU \iff P^T A = LU\]
+
+<p>Since linear systems of the form</p>
+
+\[Lx = y \quad \text{ and } \quad Ux = y\]
+
+<p>can be efficiently solved by the Forward (Backward) substitution, and the computation of the LU factorization by Gaussian elimination is pretty fast ($O(n^3)$ floating point operations), we can use that to solve the former linear system.</p>
+
+<p>Indeed,</p>
+
+\[Ax = y \iff P^TAx = P^Ty \iff LUx = P^Ty\]
+
+<p>then, by Forward-Backward substitution, this system can be solved by subsequently solve</p>
+
+\[Lz = P^Ty \quad \text{ then } \quad Ux = z\]
+
+<p>whose solution is a solution for $Ax = y$.</p>
+
+<p>Even if this procedure is automatically performed by the <code class="language-plaintext highlighter-rouge">np.linalg.solve</code> function, we can unroll it with the functions <code class="language-plaintext highlighter-rouge">scipy.linalg.lu(A)</code> and <code class="language-plaintext highlighter-rouge">scipy.linalg.solve_triangular(A, b)</code>, whose documentation can be found <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lu.html">here</a> and <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.solve_triangular.html">here</a>.</p>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Write a function that takes as input a non-singular matrix $A \in \mathbb{R}^{n \times n}$ and a vector $y \in \mathbb{R}^n$ and returns the solution $x \in \mathbb{R}^n$ of $Ax = y$ without using <code class="language-plaintext highlighter-rouge">np.linalg.lu</code>.</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+    
+    <pre>
+import numpy as np
+import scipy
+
+# Define a function that solves the system
+def solve(A, y):
+    # LU factorization of A
+    P, L, U = scipy.linalg.lu(A)
+
+    # Solve Lz = P.Ty
+    z = scipy.linalg.solve_triangular(L, P.T@y, lower=True)
+
+    # Solve Ux = z
+    x = scipy.linalg.solve_triangular(U, z)
+
+    return x
+    </pre>
+</details>
+
+<h2 id="homework">Homework</h2>
+<p>Please refer to the <a href="https://virtuale.unibo.it/pluginfile.php/1364076/mod_resource/content/1/homework1.pdf">Homework PDF</a> on Virtuale.</p>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[Basics methods for solving Linear Systems in Python.]]></summary></entry><entry><title type="html">Introduction</title><link href="http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/" rel="alternate" type="text/html" title="Introduction" /><published>2022-09-16T00:00:00+02:00</published><updated>2022-09-28T17:41:20+02:00</updated><id>http://localhost:4000/teaching/introduction_to_python_numpy</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/"><![CDATA[<p>Numerical Linear Algebra (NLA) is the study of how matrix operations can be used to create computer algorithms which efficiently and accurately provide approximate answers to questions in continuous mathematics.</p>
+
+<p>Consequently, it is mandatory to be able to efficiently implement matrix operations, i.e. operations regarding matrices (that we will represent with uppercase letters $A, B, \dots$) and vectors (that we will represent with lowercase letters $v, w, \dots$). The main library in Python implementing all the main NLA operations is <code class="language-plaintext highlighter-rouge">numpy</code>.</p>
+
+<p>In this course, we will make massive use of <code class="language-plaintext highlighter-rouge">numpy</code>, together with its add-ons libraries, such as <code class="language-plaintext highlighter-rouge">scipy</code> and <code class="language-plaintext highlighter-rouge">pandas</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">numpy</code> can be imported into Python by typing</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+</code></pre></div></div>
+
+<p>at the beginning of your code. If <code class="language-plaintext highlighter-rouge">numpy</code> is not installed on your Python environment, please follow <a href="https://numpy.org">numpy.org</a> for informations on how to install it.</p>
+
+<h3 id="documentation">Documentation</h3>
+<p>At <a href="https://numpy.org">numpy.org</a> it is possible to find a complete documentation of all the <code class="language-plaintext highlighter-rouge">numpy</code> functions with application examples.</p>
+
+<h2 id="numpy-and-numpy-arrays">Numpy and Numpy-Arrays</h2>
+
+<h3 id="creating-a-numpy-array">Creating a Numpy array</h3>
+
+<p>The basic object of <code class="language-plaintext highlighter-rouge">numpy</code> is the so-called <code class="language-plaintext highlighter-rouge">ndarray</code>, which defines the concept of vectors, matrices, tensors, …
+The simplest way to create a numpy array is to cast it from a Python <code class="language-plaintext highlighter-rouge">list</code> or <code class="language-plaintext highlighter-rouge">tuple</code>. This can be simply done as</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a = [1, 2, 3]
+a_vec = np.array(a)
+</code></pre></div></div>
+
+<p>producing a <code class="language-plaintext highlighter-rouge">numpy</code> array, <code class="language-plaintext highlighter-rouge">a_vec</code>. This can be checked by running the command</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>print(type(a_vec))
+</code></pre></div></div>
+<p>A basic propriety of a numpy array is the <code class="language-plaintext highlighter-rouge">shape</code>, representing its dimension. For example, a 5-dimensional vector $a = (1, 2, 3, 4, 5)^T$ will have shape $(5, )$, while a $3 \times 3$ matrix</p>
+
+\[A = \begin{bmatrix}
+    1 &amp; 1 &amp; -1 \\
+    2 &amp; 0 &amp; 0 \\
+    0 &amp; 1 &amp; 2
+\end{bmatrix}\]
+
+<p>have <code class="language-plaintext highlighter-rouge">shape</code> $(3, 3)$. A working example creating the matrix $A$ defined above and checking its dimension is</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A = [[1, 1, -1], [2, 0, 0], [0, 1, 2]]
+A = np.array(A)
+
+print(A.shape) # Use .shape to print the shape
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="other-functions-to-create-arrays">Other functions to create arrays</h3>
+<p>In real applications, we will usually make use of huge matrices and vectos, with dimension that can easily reach a couple of millions. Clearly, it is not possible to define those kind of array by manually typing them and then converting them to numpy arrays with the <code class="language-plaintext highlighter-rouge">np.array</code> function. Luckily, this can be avoided when the array we need to create has a specific pattern. We will now list some functions we can use to simply create specific high-dimensional arrays.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">np.linspace(a, b, n)</code>: Creates a vector of length <code class="language-plaintext highlighter-rouge">n</code>, containing <code class="language-plaintext highlighter-rouge">n</code> elements uniformely distributed in the interval $[a, b]$.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.arange(start, end, step)</code>: Creates a vector containing all the integer numbers from <code class="language-plaintext highlighter-rouge">start</code> to <code class="language-plaintext highlighter-rouge">end-1</code>, skipping <code class="language-plaintext highlighter-rouge">step</code> numbers every time.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.zeros((m, n))</code>: Creates an $m \times n$ matrix full of zeros. Clearly, to create a vector instead of a matrix, simply use <code class="language-plaintext highlighter-rouge">np.zeros((m, ))</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.ones((m, n))</code>: Creates an $m \times n$ matrix full of ones.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.zeros_like(a)</code>: Creates an array full of zeros of the same shape of <code class="language-plaintext highlighter-rouge">a</code>. This is equivalent to <code class="language-plaintext highlighter-rouge">np.zeros(a.shape)</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.diag(v)</code>: Given a vector <code class="language-plaintext highlighter-rouge">v</code> of shape $(n, )$, returns an $n \times n$ diagonal matrix with <code class="language-plaintext highlighter-rouge">v</code> as diagonal.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.random.randn(m, n)</code>: Creates an $m \times n$ matrix of normally distributed elements (i.e. sampled from $\mathcal{N}(0, I)$).</li>
+</ul>
+
+<p>For example, if we want to create a vector of length $10$ containing all the even numbers between $0$ and $18$, we can use</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # Create the vector
+a = np.arange(0, 20, 2)
+
+# Visualize the vector
+print(a)
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create an visualize the following matrix: 
+\(A =  \begin{bmatrix} 2 &amp; 1 &amp; 1 \\ 1 &amp; 2 &amp; 1 \\ 1 &amp; 1 &amp; 2\end{bmatrix}\)
+Moreover, print its shape.</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+    
+    <pre>
+import numpy as np
+
+# Define A
+A = np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+
+# Print A and its shape
+print(A)
+print(f"Shape of A is: {A.shape}")
+    </pre>
+
+</details>
+
+<hr />
+
+<h2 id="arrays-operations">Arrays operations</h2>
+<p>Now that we are able to create arrays, we need to understand how to use them. To simplify the implementation of NLA algorithms, the operations between numpy arrays basically follows the same syntax you can find in every math textbook. In particular, almost every operations is applied <em>element-wise</em>.</p>
+
+<blockquote>
+  <p>A scalar operation between $n$-dimensional arrays $a$ and $b$ is said to be element-wise if it is applied to $a$ and $b$ element by element.</p>
+</blockquote>
+
+<p>For example, if</p>
+
+\[a = \begin{bmatrix} 1 \\ 0 \\ -1 \end{bmatrix} \qquad b = \begin{bmatrix} 0 \\ 2 \\ 2 \end{bmatrix}\]
+
+<p>then, since</p>
+
+\[a + b = \begin{bmatrix} 1 + 0 \\ 0 + 2 \\ -1 + 2 \end{bmatrix} = \begin{bmatrix} 1 \\ 2 \\ 1 \end{bmatrix}\]
+
+<p>then we say that the $+$ operation is element-wise.</p>
+
+<p>We’ll list now the most important element-wise operations between arrays in numpy. When one of the two elements of the operators is a scalar number, it is threated as an array of the correct shape, where each element is equal to the number itself. In the following, we will use <code class="language-plaintext highlighter-rouge">a</code>, <code class="language-plaintext highlighter-rouge">b</code> to indicate generic arrays (vectors, matrices, …), <code class="language-plaintext highlighter-rouge">v</code>, <code class="language-plaintext highlighter-rouge">w</code> to indicate vectors and <code class="language-plaintext highlighter-rouge">A</code>, <code class="language-plaintext highlighter-rouge">B</code> to indicate matrices.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">a + b</code>: Returns the element-wise sum of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a - b</code>: Returns the element-wise difference of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a * b</code>: Returns the element-wise multiplication of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a / b</code>: Returns the element-wise division between <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a ** b</code>: Returns the element-wise exponentiation of <code class="language-plaintext highlighter-rouge">a</code> to the power of <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.exp(a)</code>: Returns the element-wise result of $e^a$.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.sin(a), np.cos(a), np.tan(a), np.log(a)</code>: Returns the corresponding element-wise operation applied to <code class="language-plaintext highlighter-rouge">a</code>.</li>
+</ul>
+
+<p>Other than element-wise operations, important operators widely used in NLA are the matrix-by-vector product, the matrix-by-matrix product and the inner product between vectors. Since those operations are mathematically similar, numpy implements them in the same way:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">a @ b</code>: Returns the matrix-by-matrix product between <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. It requires the shapes of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code> to be compatible, e.g. shape of <code class="language-plaintext highlighter-rouge">a</code> $(m, n)$, shape of <code class="language-plaintext highlighter-rouge">b</code> $(n, k)$. The shape of the result is $(m, k)$.</li>
+</ul>
+
+<p>Clearly, when either <code class="language-plaintext highlighter-rouge">a</code> or <code class="language-plaintext highlighter-rouge">b</code> are vectors of the correct shape, then <code class="language-plaintext highlighter-rouge">@</code> returns the matrix-by-vector multiplication, while if both of them are vectors, then <code class="language-plaintext highlighter-rouge">a @ b</code> returns the inner product between the two vectors. The inner product can be equivalently written as <code class="language-plaintext highlighter-rouge">np.dot(a, b)</code>.</p>
+
+<h3 id="example">Example</h3>
+<p>To understand the basic operations between arrays, we will list an example code where we construct two vectors $x_1, x_2$ of the same dimension $n$ and a matrix $A$ of shape $n \times n$. Then, we compute $y_i = A x_i$ for $i = 1, 2$. Finally, we check that $y_1 + y_2 = A(x_1 + x_2)$ i.e. we check the linearity of $A$.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+
+# Dimension of the problem
+n = 10
+
+# Create the vectors
+x1 = np.linspace(0, 1, n)
+x2 = np.random.randn(n)
+
+# Create the matrix
+A = np.random.randn(n, n)
+
+# Compute y1 and y2
+y1 = A @ x1
+y2 = A @ x2
+
+# Compute y = A(x1 + x2)
+y = A @ (x1 + x2)
+
+# Check the equality
+print(y)
+print(y1 + y2)
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create two vectors $x_1$ and $x_2$ of dimension $n$ and check that 
+\(e^{x_1} e^{x_2} = e^{x_1 + x_2}\)</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+    
+    <pre>
+import numpy as np
+
+# Setup the dimensionality of the problem
+n = 10
+
+# Create x_1 and x_2
+x_1 = np.random.rand(n)
+x_2 = np.ones((n, ))
+
+# Compute e^x_1+x_2 and e^x1 e^x2
+e_x_1_x_2 = np.exp(x_1 + x_2)
+e_x_1_e_x_2 = np.exp(x_1) * np.exp(x_2)
+
+# Check equality
+print(f"e^x_1 * e^x_2 = {e_x_1_x_2}")
+print(f"e^x_1 + x_2 = {e_x_1_e_x_2}")
+    </pre>
+
+</details>
+
+<hr />
+<h2 id="logic-operations-between-vectors">Logic operations between vectors</h2>
+<p>Clearly, it is also possible to define element-wise logical operations between arrays. The results will always be a boolean array of the same dimension of the input arrays, where the logic is applied element by element. Here we report a table of the main logic operations:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Operator</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>==</td>
+      <td>EQUAL</td>
+    </tr>
+    <tr>
+      <td>!=</td>
+      <td>NOT EQUAL</td>
+    </tr>
+    <tr>
+      <td>&gt;, &gt;=</td>
+      <td>GREATER THAN</td>
+    </tr>
+    <tr>
+      <td>&lt;, &lt;=</td>
+      <td>LOWER THAN</td>
+    </tr>
+    <tr>
+      <td>&amp;&amp;</td>
+      <td>AND</td>
+    </tr>
+    <tr>
+      <td>||</td>
+      <td>OR</td>
+    </tr>
+    <tr>
+      <td>!</td>
+      <td>NOT</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<hr />
+<h2 id="slicing">Slicing</h2>
+<p>An important operation we will often use in practice, is the so-called <em>slicing</em>. Slicing is extracting a portion of an array, indexed by a given index array. For example, consider</p>
+
+\[v = [0, 1, -1, 2, 1, -1]^T\]
+
+<p>and assume we want to extract the first three elements of $v$ and assign them to a new vector $w$. This can be easily done by</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the array
+v = np.array([0, 1, -1, 2, 1, -1])
+
+# Slicing
+w = v[0:3]
+</code></pre></div></div>
+
+<p>The notation <code class="language-plaintext highlighter-rouge">v[start:end]</code> returns the elements of <code class="language-plaintext highlighter-rouge">v</code> from <code class="language-plaintext highlighter-rouge">start</code> to <code class="language-plaintext highlighter-rouge">end-1</code>. When <code class="language-plaintext highlighter-rouge">start</code>=0 as in the example above, it can be emitted (e.g. <code class="language-plaintext highlighter-rouge">v[0:3]</code> is equivalent to <code class="language-plaintext highlighter-rouge">v[:3]</code>).</p>
+
+<p>Slicing can also be performing by passing a numpy array of indices inside of the square brackets. For example, assume we want to extract the elements in even position of <code class="language-plaintext highlighter-rouge">v</code>. Then</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the array
+v = np.array([0, 1, -1, 2, 1, -1])
+
+# Slicing
+idx = np.arange(0, len(v), 2)
+w = v[idx]
+</code></pre></div></div>
+
+<p>does the job.</p>
+
+<p>Finally, we can also slice by using boolean arrays. When this is the case, the elements in the position of the <code class="language-plaintext highlighter-rouge">True</code> values are returned. For example</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create arrays
+v = np.array([0, 1, -1, 2, 1, -1])
+w = np.array([0, 0, -1, 1, 2, -1])
+
+# Slicing
+t = v[v == w]
+</code></pre></div></div>
+
+<p>is how we extract the elements that <code class="language-plaintext highlighter-rouge">v</code> and <code class="language-plaintext highlighter-rouge">w</code> have in common.</p>
+
+<h3 id="slicing-matrices">Slicing matrices</h3>
+<p>Slicing matrices works the same way as slicing vectors. The sole difference is that we need to use a 2-dimensional indexing array. For example, if</p>
+
+\[A = \begin{bmatrix} 1 &amp; 2 &amp; 3 \\ 4 &amp; 5 &amp; 6 \\ 7 &amp; 8 &amp; 9 \end{bmatrix}\]
+
+<p>and we want to extract the $2 \times 2$ principal submatrix of $A$ (that is, the left upper-most $2 \times 2$ submatrix of $A$), then we can do</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the matrix
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+# Slicing
+B = A[:2, :2]
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create an $n \times n$ matrix $A$ of normally distributed values. Then, create a second matrix $B$ with the same shape of $A$ such that it is equal to $A$ when $a_{i, j}$ is positive, while it is equal to $0$ when $a_{i, j} &lt; 0$.</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+
+    <pre>
+import numpy as np
+
+# Setup the dimensionality of the problem
+n = 10
+
+# Create matrix A and B
+A = np.random.randn(n, n)
+
+B = A
+B[A&lt;0] = 0
+    </pre>
+
+</details>
+
+<h2 id="matrix-and-vector-manipulation">Matrix and Vector Manipulation</h2>
+<p>Numpy also implements the basic operations on matrix and vectors. In particular, the following functions can be useful in this course:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.norm(a, p)</code>: Computes the $p$-norm of a vector or a matrix $a$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.cond(A, p)</code>: Computes the condition number in $p$-norm of a matrix $A$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.matrix_rank(A)</code>: Computes the rank of the matrix $A$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.inv(A)</code>: When invertible, compute the inverse matrix of $A$. <em>Warning:</em> Very slow;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.transpose(A)</code>: Compute the transpose matrix of $A$. It is equivalent to <code class="language-plaintext highlighter-rouge">A.T</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.reshape(a, new_shape)</code>: Reshape an array <code class="language-plaintext highlighter-rouge">a</code> to a given shape.</li>
+</ul>
+
+<h2 id="read-data-with-pandas">Read data with pandas</h2>
+<p>Since we will frequently work with data, it will be important to be able to manipulate them. In this class, we will learn how to load a dataset into Python by using a library called <code class="language-plaintext highlighter-rouge">pandas</code>, whose documentation can be found <a href="https://pandas.pydata.org/docs/user_guide/index.html#user-guide">here</a>.</p>
+
+<p>As an example, download the <a href="https://virtuale.unibo.it/mod/resource/view.php?id=1002928">data</a> from Virtuale, which is taken by Kaggle at the following link: <a href="https://www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014">www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014</a>.</p>
+
+<p>Then, place it in the same folder as the Python file on which you are working and use the following code to load it in memory.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import pandas as pd
+
+# Read data from a csv file
+data = pd.read_csv('./data/US_births_2000-2014_SSA.csv')
+</code></pre></div></div>
+
+<p>Pandas uses similar function name as numpy to keep everything coherent. For example, we can check the shape of <code class="language-plaintext highlighter-rouge">data</code> by using the function <code class="language-plaintext highlighter-rouge">print(data.shape)</code>. Moreover, a pandas dataframe can be casted into a numpy array by simply</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+
+# Cast into numpy array
+np_data = np.array(data)
+
+# Check that the dimension didn't change
+print(f"{data.shape} should be equal to {np_data.shape}")
+</code></pre></div></div>
+
+<h2 id="going-on">Going on</h2>
+<p>An application of Numpy will be on Linear Systems. An introduction to plots in Python with matplotlib can be found here.</p>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science.]]></summary></entry><entry><title type="html">Plotting</title><link href="http://localhost:4000/teaching/2022-09-16-matplotlib/" rel="alternate" type="text/html" title="Plotting" /><published>2022-09-16T00:00:00+02:00</published><updated>2022-09-28T17:41:58+02:00</updated><id>http://localhost:4000/teaching/matplotlib</id><content type="html" xml:base="http://localhost:4000/teaching/2022-09-16-matplotlib/"><![CDATA[<p>Visualization in Python can be performed by a famous library named <code class="language-plaintext highlighter-rouge">matplotlib</code>, in particular its sub-package <code class="language-plaintext highlighter-rouge">matplotlib.pyplot</code>. Documentation can be found at <a href="https://matplotlib.org/">matplotlib.org</a>.</p>
+
+<p>Plotting in matplotlib is very easy. Given two $N$-dimensional vectors $x = (x_1, \dots, x_N)$ and $y = (y_1, \dots, y_N)$, containing the $N$ datapoints we want to represent, the function <code class="language-plaintext highlighter-rouge">plot(x, y)</code> will plot on the plate each couple $(x_i, y_i)$ for $i = 1, \dots, N$, and will connect (by default) them with a line. Such a plot can be visualized by calling the function <code class="language-plaintext highlighter-rouge">show()</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Creating two vectors
+a = 0
+b = 2*np.pi
+N = 50
+
+x = np.linspace(a, b, N)
+y = np.sin(x)
+
+# Visualize
+plt.plot(x, y)
+plt.show()
+</code></pre></div></div>
+
+<p><img src="/assets/images/matplotlib_tutorial/plot_1.png" alt="" /></p>
+
+<p>As you can see, the code above will plot the sine function. We now want to see how we can change the aesthetic of this plot, by adding title, axis grid, axis label, …</p>
+
+<h2 id="customize-the-plot">Customize the plot</h2>
+<p>In matplotlib, most of the customization we want to add to the plot must be inserted in between the line <code class="language-plaintext highlighter-rouge">plt.plot(x, y)</code> and the line <code class="language-plaintext highlighter-rouge">plt.show()</code>. The most common customization functions are:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">plt.title(str)</code>: Add a title to the plot;</li>
+  <li><code class="language-plaintext highlighter-rouge">plt.xlabel(str)</code>: Add a label to the x-axis;</li>
+  <li><code class="language-plaintext highlighter-rouge">plt.ylabel(str)</code>: Add a label to the y-axis;</li>
+  <li><code class="language-plaintext highlighter-rouge">plt.grid()</code>: Add an axis grid on the background of the plot;</li>
+  <li><code class="language-plaintext highlighter-rouge">plt.xlim([a, b])</code>: Force the horizontal limit of the axis to be <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">plt.ylim([a, b])</code>: Force the vertical limit of the axis to be <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>;</li>
+</ul>
+
+<p>For example, we can customize the plot above to obtain something like that</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Creating two vectors
+a = 0
+b = 2*np.pi
+N = 50
+
+x = np.linspace(a, b, N)
+y = np.sin(x)
+
+# Visualize
+plt.plot(x, y)
+plt.title('A plot of f(x) = sin(x)')
+plt.xlabel('x')
+plt.ylabel('y = sin(x)')
+plt.grid()
+plt.show()
+</code></pre></div></div>
+
+<p><img src="/assets/images/matplotlib_tutorial/plot_2.png" alt="" /></p>
+
+<h2 id="multiplot-and-line-customization">Multiplot and Line customization</h2>
+<p>Clearly, it is also possible to plot more than one line at the same time. Simply define others $x’, y’ \in \mathbb{R}^N$ containg the new data we want to plot and add another <code class="language-plaintext highlighter-rouge">plt.plot(x', y')</code> in between <code class="language-plaintext highlighter-rouge">plt.plot(x, y)</code> and <code class="language-plaintext highlighter-rouge">plt.show()</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Creating two vectors
+a = 0
+b = 2*np.pi
+N = 50
+
+x = np.linspace(a, b, N)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+
+# Visualize
+plt.plot(x, y1)
+plt.plot(x, y2)
+plt.title('A plot of trig. functions.')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(['f(x) = sin(x)', 'f(x) = cos(x)'])
+plt.grid()
+plt.show()
+</code></pre></div></div>
+
+<p><img src="/assets/images/matplotlib_tutorial/plot_3.png" alt="" /></p>
+
+<p>As you can see, in the bottom-left of the plot, we also printed out a <code class="language-plaintext highlighter-rouge">legend</code>. Following the code above, it is easy to understand that a legend can be simply introduced by listing the name of the lines, ordered with respect to the ordering of the <code class="language-plaintext highlighter-rouge">plt.plot()</code> functions. Matplotlib will visualize the correct color of the line accordingly.</p>
+
+<p>Clearly, we can also modify the line specifications such as the color, the thickness and the style. To to that, we have to insert the following specifications inside of the corresponding <code class="language-plaintext highlighter-rouge">plt.plot()</code> line.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">color='str'</code>: Change the color of the line. A list of all the available colors can be found <a href="https://matplotlib.org/stable/gallery/color/named_colors.html">here</a>;</li>
+  <li><code class="language-plaintext highlighter-rouge">linewidth=int</code>: Change the thickness of the line.</li>
+</ul>
+
+<p>Moreover, the style of the line can be modified by adding some specifications just after the <code class="language-plaintext highlighter-rouge">y</code> input. For example,</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">"o"</code>: Changes the linestyle to rounded markers;</li>
+  <li><code class="language-plaintext highlighter-rouge">"--"</code>: Changes the linestyle to be dotted lines;</li>
+  <li><code class="language-plaintext highlighter-rouge">"o-"</code>: Changes the linestyle to be a continuous line with markers on the points defined by <code class="language-plaintext highlighter-rouge">(x, y)</code>.</li>
+</ul>
+
+<p>A complete list of all the possible linestyles can be found <a href="https://matplotlib.org/2.1.2/api/_as_gen/matplotlib.pyplot.plot.html">here</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Creating two vectors
+a = 0
+b = 2*np.pi
+N = 50
+
+x = np.linspace(a, b, N)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+
+# Visualize
+plt.plot(x, y1, 'o', color='red')
+plt.plot(x, y2, '--', color='k', linewidth=2)
+plt.title('A plot of trig. functions.')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(['f(x) = sin(x)', 'f(x) = cos(x)'])
+plt.grid()
+plt.show()
+</code></pre></div></div>
+
+<p><img src="/assets/images/matplotlib_tutorial/plot_4.png" alt="" /></p>
+
+<h2 id="subplots">Subplots</h2>
+<p>Subplots are required to create a matrix of plots inside of the same figure, which can be very useful for various visualizations.</p>
+
+<p>A subplot is created by first defining a <code class="language-plaintext highlighter-rouge">figure</code>. This can be done by the line <code class="language-plaintext highlighter-rouge">plt.figure(figsize=(w, h))</code> where the <code class="language-plaintext highlighter-rouge">figsize</code> argument is required to change the proportion of the resulting plot. After that, it is possible to open a subplot with the command <code class="language-plaintext highlighter-rouge">plt.subplot(nrow, ncol, idx)</code>, where <code class="language-plaintext highlighter-rouge">nrow</code> and <code class="language-plaintext highlighter-rouge">ncol</code> represents the number of images per rows and the number of images per columns in our matrix of plots, while <code class="language-plaintext highlighter-rouge">idx</code> is an incremental value, starting from 1, that indicate where the plot we are going to do should be placed inside of the matrix. <code class="language-plaintext highlighter-rouge">idx=1</code> represents the upper-left corner and, while increasing, it moves the image from left to right and from up to down into the matrix.</p>
+
+<p>Each time we want to open a different plot in our subplot, we have to specify the command <code class="language-plaintext highlighter-rouge">plt.subplot(nrow, ncol, idx)</code> again, with the same <code class="language-plaintext highlighter-rouge">nrow</code> and <code class="language-plaintext highlighter-rouge">ncol</code> argument, but different <code class="language-plaintext highlighter-rouge">idx</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Creating data
+N = 200
+
+x1 = np.random.normal(0, 1, (N, ))
+y1 = np.random.normal(0, 1, (N, ))
+
+x2 = np.random.normal(0, 0.5, (N, ))
+y2 = np.random.normal(0, 2, (N, ))
+
+
+# Visualize
+plt.figure(figsize=(10, 4))
+plt.subplot(1, 2, 1)
+plt.plot(x1, y1, 'o', color='red')
+plt.title('Normal distribution')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.xlim([-3, 3])
+plt.ylim([-4, 4])
+plt.grid()
+
+plt.subplot(1, 2, 2)
+plt.plot(x2, y2, 'o', color='k')
+plt.title('Vertical Oriented Gaussian distribution')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.xlim([-3, 3])
+plt.ylim([-4, 4])
+plt.grid()
+
+plt.show()
+</code></pre></div></div>
+
+<p><img src="/assets/images/matplotlib_tutorial/plot_5.png" alt="" /></p>
+
+<h2 id="exercise-plotting-data">Exercise: Plotting data</h2>
+<p>Going back to the example in the introductory post on Numpy where we introduced the library pandas, useful to read data into Python, we can now use matplotlib to visualize it.</p>
+
+<p>First of all, download (if required) the <a href="https://virtuale.unibo.it/mod/resource/view.php?id=1002928">data</a> from Virtuale or equivalently by Kaggle at the following link: <a href="https://www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014">www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014</a>, and place the <em>.csv</em> file into the same folder of your <code class="language-plaintext highlighter-rouge">.py</code> file. Then, with the help of what you studied in the introductory post,</p>
+
+<ul>
+  <li>Import the data into Python;</li>
+  <li>Explore the data by visualizing the first rows and the columns of it (the function <code class="language-plaintext highlighter-rouge">data.head()</code> from pandas can be useful), or alternatively, use the data documentation on <a href="https://www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014">www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014</a>;</li>
+  <li>Create a new column, <code class="language-plaintext highlighter-rouge">total_date</code>, representing each date into an increasing number, the days since the beginning of the data collection;</li>
+  <li>Plot the number of birth with respect to <code class="language-plaintext highlighter-rouge">total_date</code> to visualize the incremental number of birth during the years;</li>
+  <li><em>Optional:</em> Plot an barplot (<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html">matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.bar.html</a>) of the number of birth with respect to the day of the week and investigate if there are asymetries in the birth number in some days of the week.</li>
+</ul>
+
+<h2 id="going-on">Going on</h2>
+<p>The next topic will be linear systems.</p>]]></content><author><name>Davide Evangelista</name><email>davide.evangelista5@unibo.it</email></author><category term="teaching" /><summary type="html"><![CDATA[Introducing Matplotlib, the most famous library when visualization in Python.]]></summary></entry></feed>

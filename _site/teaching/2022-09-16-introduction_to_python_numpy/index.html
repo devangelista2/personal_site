@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en"><!--
+ __  __                __                                     __
+/\ \/\ \              /\ \             __                    /\ \
+\ \ \_\ \   __  __    \_\ \      __   /\_\      __       ___ \ \ \/'\
+ \ \  _  \ /\ \/\ \   /'_` \   /'__`\ \/\ \   /'__`\    /'___\\ \ , <
+  \ \ \ \ \\ \ \_\ \ /\ \L\ \ /\  __/  \ \ \ /\ \L\.\_ /\ \__/ \ \ \\`\
+   \ \_\ \_\\/`____ \\ \___,_\\ \____\ _\ \ \\ \__/.\_\\ \____\ \ \_\ \_\
+    \/_/\/_/ `/___/> \\/__,_ / \/____//\ \_\ \\/__/\/_/ \/____/  \/_/\/_/
+                /\___/                \ \____/
+                \/__/                  \/___/
+
+Powered by Hydejack v9.1.6 <https://hydejack.com/>
+-->
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+  <meta name="robots" content="noindex">
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introduction | Davide Evangelista</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Introduction" />
+<meta name="author" content="Davide Evangelista" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science." />
+<meta property="og:description" content="Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science." />
+<link rel="canonical" href="http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/" />
+<meta property="og:url" content="http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/" />
+<meta property="og:site_name" content="Davide Evangelista" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-09-16T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Introduction" />
+<meta name="twitter:site" content="@DavideEvangel17" />
+<meta name="twitter:creator" content="@DavideEvangel17" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Davide Evangelista"},"dateModified":"2022-09-28T17:41:20+02:00","datePublished":"2022-09-16T00:00:00+02:00","description":"Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science.","headline":"Introduction","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/blog/logo.png"},"name":"Davide Evangelista"},"url":"http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="theme-color" content="rgb(37,150,190)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Davide Evangelista">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="Davide Evangelista">
+
+<meta name="generator" content="Hydejack v9.1.6" />
+
+
+<link rel="alternate" href="http://localhost:4000/teaching/2022-09-16-introduction_to_python_numpy/" hreflang="en">
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Davide Evangelista" />
+
+
+<link rel="shortcut icon"    href="/assets/img/blog/logo.ico">
+<link rel="apple-touch-icon" href="/assets/img/blog/logo.ico">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+
+
+
+
+
+<script>!function(r,c){"use strict";function a(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=c.createElement("script"),e=(n.src=e,t&&a(n,"load",t,{once:!0}),c.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=c.createElement("script");function o(){r._loaded=!0,t&&a(n,"load",t,{once:!0});var e=c.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():a(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){a(c.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}}(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2022-09-28T17:45:24+02:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.1.6.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(79,177,186);--accent-color-faded: rgba(79,177,186,0.5);--accent-color-highlight: rgba(79,177,186,0.1);--accent-color-darkened: #409ba3;--theme-color: rgb(37,150,190)}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/teaching/">teaching</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>2022-09-16-introduction_to_python_numpy</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-teaching-introduction_to_python_numpy" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        Introduction
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2022-09-16T00:00:00+02:00">16 Sep 2022</time> in <a href="/teaching/" class="flip-title">Teaching</a> 
+      </span>
+      
+    </div>
+
+    
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      Introducing Numpy, Scipy and Pandas, the most famous libraries when using Python for Data Science.
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <p>Numerical Linear Algebra (NLA) is the study of how matrix operations can be used to create computer algorithms which efficiently and accurately provide approximate answers to questions in continuous mathematics.</p>
+
+<p>Consequently, it is mandatory to be able to efficiently implement matrix operations, i.e. operations regarding matrices (that we will represent with uppercase letters $A, B, \dots$) and vectors (that we will represent with lowercase letters $v, w, \dots$). The main library in Python implementing all the main NLA operations is <code class="language-plaintext highlighter-rouge">numpy</code>.</p>
+
+<p>In this course, we will make massive use of <code class="language-plaintext highlighter-rouge">numpy</code>, together with its add-ons libraries, such as <code class="language-plaintext highlighter-rouge">scipy</code> and <code class="language-plaintext highlighter-rouge">pandas</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">numpy</code> can be imported into Python by typing</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+</code></pre></div></div>
+
+<p>at the beginning of your code. If <code class="language-plaintext highlighter-rouge">numpy</code> is not installed on your Python environment, please follow <a href="https://numpy.org">numpy.org</a> for informations on how to install it.</p>
+
+<h3 id="documentation">Documentation</h3>
+<p>At <a href="https://numpy.org">numpy.org</a> it is possible to find a complete documentation of all the <code class="language-plaintext highlighter-rouge">numpy</code> functions with application examples.</p>
+
+<h2 id="numpy-and-numpy-arrays">Numpy and Numpy-Arrays</h2>
+
+<h3 id="creating-a-numpy-array">Creating a Numpy array</h3>
+
+<p>The basic object of <code class="language-plaintext highlighter-rouge">numpy</code> is the so-called <code class="language-plaintext highlighter-rouge">ndarray</code>, which defines the concept of vectors, matrices, tensors, …
+The simplest way to create a numpy array is to cast it from a Python <code class="language-plaintext highlighter-rouge">list</code> or <code class="language-plaintext highlighter-rouge">tuple</code>. This can be simply done as</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a = [1, 2, 3]
+a_vec = np.array(a)
+</code></pre></div></div>
+
+<p>producing a <code class="language-plaintext highlighter-rouge">numpy</code> array, <code class="language-plaintext highlighter-rouge">a_vec</code>. This can be checked by running the command</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>print(type(a_vec))
+</code></pre></div></div>
+<p>A basic propriety of a numpy array is the <code class="language-plaintext highlighter-rouge">shape</code>, representing its dimension. For example, a 5-dimensional vector $a = (1, 2, 3, 4, 5)^T$ will have shape $(5, )$, while a $3 \times 3$ matrix</p>
+
+\[A = \begin{bmatrix}
+    1 &amp; 1 &amp; -1 \\
+    2 &amp; 0 &amp; 0 \\
+    0 &amp; 1 &amp; 2
+\end{bmatrix}\]
+
+<p>have <code class="language-plaintext highlighter-rouge">shape</code> $(3, 3)$. A working example creating the matrix $A$ defined above and checking its dimension is</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A = [[1, 1, -1], [2, 0, 0], [0, 1, 2]]
+A = np.array(A)
+
+print(A.shape) # Use .shape to print the shape
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="other-functions-to-create-arrays">Other functions to create arrays</h3>
+<p>In real applications, we will usually make use of huge matrices and vectos, with dimension that can easily reach a couple of millions. Clearly, it is not possible to define those kind of array by manually typing them and then converting them to numpy arrays with the <code class="language-plaintext highlighter-rouge">np.array</code> function. Luckily, this can be avoided when the array we need to create has a specific pattern. We will now list some functions we can use to simply create specific high-dimensional arrays.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">np.linspace(a, b, n)</code>: Creates a vector of length <code class="language-plaintext highlighter-rouge">n</code>, containing <code class="language-plaintext highlighter-rouge">n</code> elements uniformely distributed in the interval $[a, b]$.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.arange(start, end, step)</code>: Creates a vector containing all the integer numbers from <code class="language-plaintext highlighter-rouge">start</code> to <code class="language-plaintext highlighter-rouge">end-1</code>, skipping <code class="language-plaintext highlighter-rouge">step</code> numbers every time.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.zeros((m, n))</code>: Creates an $m \times n$ matrix full of zeros. Clearly, to create a vector instead of a matrix, simply use <code class="language-plaintext highlighter-rouge">np.zeros((m, ))</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.ones((m, n))</code>: Creates an $m \times n$ matrix full of ones.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.zeros_like(a)</code>: Creates an array full of zeros of the same shape of <code class="language-plaintext highlighter-rouge">a</code>. This is equivalent to <code class="language-plaintext highlighter-rouge">np.zeros(a.shape)</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.diag(v)</code>: Given a vector <code class="language-plaintext highlighter-rouge">v</code> of shape $(n, )$, returns an $n \times n$ diagonal matrix with <code class="language-plaintext highlighter-rouge">v</code> as diagonal.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.random.randn(m, n)</code>: Creates an $m \times n$ matrix of normally distributed elements (i.e. sampled from $\mathcal{N}(0, I)$).</li>
+</ul>
+
+<p>For example, if we want to create a vector of length $10$ containing all the even numbers between $0$ and $18$, we can use</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # Create the vector
+a = np.arange(0, 20, 2)
+
+# Visualize the vector
+print(a)
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create an visualize the following matrix: 
+\(A =  \begin{bmatrix} 2 &amp; 1 &amp; 1 \\ 1 &amp; 2 &amp; 1 \\ 1 &amp; 1 &amp; 2\end{bmatrix}\)
+Moreover, print its shape.</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+    
+    <pre>
+import numpy as np
+
+# Define A
+A = np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+
+# Print A and its shape
+print(A)
+print(f"Shape of A is: {A.shape}")
+    </pre>
+
+</details>
+
+<hr />
+
+<h2 id="arrays-operations">Arrays operations</h2>
+<p>Now that we are able to create arrays, we need to understand how to use them. To simplify the implementation of NLA algorithms, the operations between numpy arrays basically follows the same syntax you can find in every math textbook. In particular, almost every operations is applied <em>element-wise</em>.</p>
+
+<blockquote>
+  <p>A scalar operation between $n$-dimensional arrays $a$ and $b$ is said to be element-wise if it is applied to $a$ and $b$ element by element.</p>
+</blockquote>
+
+<p>For example, if</p>
+
+\[a = \begin{bmatrix} 1 \\ 0 \\ -1 \end{bmatrix} \qquad b = \begin{bmatrix} 0 \\ 2 \\ 2 \end{bmatrix}\]
+
+<p>then, since</p>
+
+\[a + b = \begin{bmatrix} 1 + 0 \\ 0 + 2 \\ -1 + 2 \end{bmatrix} = \begin{bmatrix} 1 \\ 2 \\ 1 \end{bmatrix}\]
+
+<p>then we say that the $+$ operation is element-wise.</p>
+
+<p>We’ll list now the most important element-wise operations between arrays in numpy. When one of the two elements of the operators is a scalar number, it is threated as an array of the correct shape, where each element is equal to the number itself. In the following, we will use <code class="language-plaintext highlighter-rouge">a</code>, <code class="language-plaintext highlighter-rouge">b</code> to indicate generic arrays (vectors, matrices, …), <code class="language-plaintext highlighter-rouge">v</code>, <code class="language-plaintext highlighter-rouge">w</code> to indicate vectors and <code class="language-plaintext highlighter-rouge">A</code>, <code class="language-plaintext highlighter-rouge">B</code> to indicate matrices.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">a + b</code>: Returns the element-wise sum of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a - b</code>: Returns the element-wise difference of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a * b</code>: Returns the element-wise multiplication of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a / b</code>: Returns the element-wise division between <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">a ** b</code>: Returns the element-wise exponentiation of <code class="language-plaintext highlighter-rouge">a</code> to the power of <code class="language-plaintext highlighter-rouge">b</code>. Requires the two arrays to have the same <code class="language-plaintext highlighter-rouge">shape</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.exp(a)</code>: Returns the element-wise result of $e^a$.</li>
+  <li><code class="language-plaintext highlighter-rouge">np.sin(a), np.cos(a), np.tan(a), np.log(a)</code>: Returns the corresponding element-wise operation applied to <code class="language-plaintext highlighter-rouge">a</code>.</li>
+</ul>
+
+<p>Other than element-wise operations, important operators widely used in NLA are the matrix-by-vector product, the matrix-by-matrix product and the inner product between vectors. Since those operations are mathematically similar, numpy implements them in the same way:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">a @ b</code>: Returns the matrix-by-matrix product between <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>. It requires the shapes of <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code> to be compatible, e.g. shape of <code class="language-plaintext highlighter-rouge">a</code> $(m, n)$, shape of <code class="language-plaintext highlighter-rouge">b</code> $(n, k)$. The shape of the result is $(m, k)$.</li>
+</ul>
+
+<p>Clearly, when either <code class="language-plaintext highlighter-rouge">a</code> or <code class="language-plaintext highlighter-rouge">b</code> are vectors of the correct shape, then <code class="language-plaintext highlighter-rouge">@</code> returns the matrix-by-vector multiplication, while if both of them are vectors, then <code class="language-plaintext highlighter-rouge">a @ b</code> returns the inner product between the two vectors. The inner product can be equivalently written as <code class="language-plaintext highlighter-rouge">np.dot(a, b)</code>.</p>
+
+<h3 id="example">Example</h3>
+<p>To understand the basic operations between arrays, we will list an example code where we construct two vectors $x_1, x_2$ of the same dimension $n$ and a matrix $A$ of shape $n \times n$. Then, we compute $y_i = A x_i$ for $i = 1, 2$. Finally, we check that $y_1 + y_2 = A(x_1 + x_2)$ i.e. we check the linearity of $A$.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+
+# Dimension of the problem
+n = 10
+
+# Create the vectors
+x1 = np.linspace(0, 1, n)
+x2 = np.random.randn(n)
+
+# Create the matrix
+A = np.random.randn(n, n)
+
+# Compute y1 and y2
+y1 = A @ x1
+y2 = A @ x2
+
+# Compute y = A(x1 + x2)
+y = A @ (x1 + x2)
+
+# Check the equality
+print(y)
+print(y1 + y2)
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create two vectors $x_1$ and $x_2$ of dimension $n$ and check that 
+\(e^{x_1} e^{x_2} = e^{x_1 + x_2}\)</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+    
+    <pre>
+import numpy as np
+
+# Setup the dimensionality of the problem
+n = 10
+
+# Create x_1 and x_2
+x_1 = np.random.rand(n)
+x_2 = np.ones((n, ))
+
+# Compute e^x_1+x_2 and e^x1 e^x2
+e_x_1_x_2 = np.exp(x_1 + x_2)
+e_x_1_e_x_2 = np.exp(x_1) * np.exp(x_2)
+
+# Check equality
+print(f"e^x_1 * e^x_2 = {e_x_1_x_2}")
+print(f"e^x_1 + x_2 = {e_x_1_e_x_2}")
+    </pre>
+
+</details>
+
+<hr />
+<h2 id="logic-operations-between-vectors">Logic operations between vectors</h2>
+<p>Clearly, it is also possible to define element-wise logical operations between arrays. The results will always be a boolean array of the same dimension of the input arrays, where the logic is applied element by element. Here we report a table of the main logic operations:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Operator</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>==</td>
+      <td>EQUAL</td>
+    </tr>
+    <tr>
+      <td>!=</td>
+      <td>NOT EQUAL</td>
+    </tr>
+    <tr>
+      <td>&gt;, &gt;=</td>
+      <td>GREATER THAN</td>
+    </tr>
+    <tr>
+      <td>&lt;, &lt;=</td>
+      <td>LOWER THAN</td>
+    </tr>
+    <tr>
+      <td>&amp;&amp;</td>
+      <td>AND</td>
+    </tr>
+    <tr>
+      <td>||</td>
+      <td>OR</td>
+    </tr>
+    <tr>
+      <td>!</td>
+      <td>NOT</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<hr />
+<h2 id="slicing">Slicing</h2>
+<p>An important operation we will often use in practice, is the so-called <em>slicing</em>. Slicing is extracting a portion of an array, indexed by a given index array. For example, consider</p>
+
+\[v = [0, 1, -1, 2, 1, -1]^T\]
+
+<p>and assume we want to extract the first three elements of $v$ and assign them to a new vector $w$. This can be easily done by</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the array
+v = np.array([0, 1, -1, 2, 1, -1])
+
+# Slicing
+w = v[0:3]
+</code></pre></div></div>
+
+<p>The notation <code class="language-plaintext highlighter-rouge">v[start:end]</code> returns the elements of <code class="language-plaintext highlighter-rouge">v</code> from <code class="language-plaintext highlighter-rouge">start</code> to <code class="language-plaintext highlighter-rouge">end-1</code>. When <code class="language-plaintext highlighter-rouge">start</code>=0 as in the example above, it can be emitted (e.g. <code class="language-plaintext highlighter-rouge">v[0:3]</code> is equivalent to <code class="language-plaintext highlighter-rouge">v[:3]</code>).</p>
+
+<p>Slicing can also be performing by passing a numpy array of indices inside of the square brackets. For example, assume we want to extract the elements in even position of <code class="language-plaintext highlighter-rouge">v</code>. Then</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the array
+v = np.array([0, 1, -1, 2, 1, -1])
+
+# Slicing
+idx = np.arange(0, len(v), 2)
+w = v[idx]
+</code></pre></div></div>
+
+<p>does the job.</p>
+
+<p>Finally, we can also slice by using boolean arrays. When this is the case, the elements in the position of the <code class="language-plaintext highlighter-rouge">True</code> values are returned. For example</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create arrays
+v = np.array([0, 1, -1, 2, 1, -1])
+w = np.array([0, 0, -1, 1, 2, -1])
+
+# Slicing
+t = v[v == w]
+</code></pre></div></div>
+
+<p>is how we extract the elements that <code class="language-plaintext highlighter-rouge">v</code> and <code class="language-plaintext highlighter-rouge">w</code> have in common.</p>
+
+<h3 id="slicing-matrices">Slicing matrices</h3>
+<p>Slicing matrices works the same way as slicing vectors. The sole difference is that we need to use a 2-dimensional indexing array. For example, if</p>
+
+\[A = \begin{bmatrix} 1 &amp; 2 &amp; 3 \\ 4 &amp; 5 &amp; 6 \\ 7 &amp; 8 &amp; 9 \end{bmatrix}\]
+
+<p>and we want to extract the $2 \times 2$ principal submatrix of $A$ (that is, the left upper-most $2 \times 2$ submatrix of $A$), then we can do</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Create the matrix
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+# Slicing
+B = A[:2, :2]
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong><em>Exercise:</em></strong> Create an $n \times n$ matrix $A$ of normally distributed values. Then, create a second matrix $B$ with the same shape of $A$ such that it is equal to $A$ when $a_{i, j}$ is positive, while it is equal to $0$ when $a_{i, j} &lt; 0$.</p>
+</blockquote>
+
+<details>
+    <summary> Visualize the solution </summary>
+
+    <pre>
+import numpy as np
+
+# Setup the dimensionality of the problem
+n = 10
+
+# Create matrix A and B
+A = np.random.randn(n, n)
+
+B = A
+B[A&lt;0] = 0
+    </pre>
+
+</details>
+
+<h2 id="matrix-and-vector-manipulation">Matrix and Vector Manipulation</h2>
+<p>Numpy also implements the basic operations on matrix and vectors. In particular, the following functions can be useful in this course:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.norm(a, p)</code>: Computes the $p$-norm of a vector or a matrix $a$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.cond(A, p)</code>: Computes the condition number in $p$-norm of a matrix $A$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.matrix_rank(A)</code>: Computes the rank of the matrix $A$;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.linalg.inv(A)</code>: When invertible, compute the inverse matrix of $A$. <em>Warning:</em> Very slow;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.transpose(A)</code>: Compute the transpose matrix of $A$. It is equivalent to <code class="language-plaintext highlighter-rouge">A.T</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">np.reshape(a, new_shape)</code>: Reshape an array <code class="language-plaintext highlighter-rouge">a</code> to a given shape.</li>
+</ul>
+
+<h2 id="read-data-with-pandas">Read data with pandas</h2>
+<p>Since we will frequently work with data, it will be important to be able to manipulate them. In this class, we will learn how to load a dataset into Python by using a library called <code class="language-plaintext highlighter-rouge">pandas</code>, whose documentation can be found <a href="https://pandas.pydata.org/docs/user_guide/index.html#user-guide">here</a>.</p>
+
+<p>As an example, download the <a href="https://virtuale.unibo.it/mod/resource/view.php?id=1002928">data</a> from Virtuale, which is taken by Kaggle at the following link: <a href="https://www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014">www.kaggle.com/mysarahmadbhat/us-births-2000-to-2014</a>.</p>
+
+<p>Then, place it in the same folder as the Python file on which you are working and use the following code to load it in memory.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import pandas as pd
+
+# Read data from a csv file
+data = pd.read_csv('./data/US_births_2000-2014_SSA.csv')
+</code></pre></div></div>
+
+<p>Pandas uses similar function name as numpy to keep everything coherent. For example, we can check the shape of <code class="language-plaintext highlighter-rouge">data</code> by using the function <code class="language-plaintext highlighter-rouge">print(data.shape)</code>. Moreover, a pandas dataframe can be casted into a numpy array by simply</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import numpy as np
+
+# Cast into numpy array
+np_data = np.array(data)
+
+# Check that the dimension didn't change
+print(f"{data.shape} should be equal to {np_data.shape}")
+</code></pre></div></div>
+
+<h2 id="going-on">Going on</h2>
+<p>An application of Numpy will be on Linear Systems. An introduction to plots in Python with matplotlib can be found here.</p>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://www.unibo.it/uniboweb/utils/UserImage.aspx?IdAnagrafica=923305&IdFoto=c2e9b60e"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Davide Evangelista"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>I’m a Mathematics PhD student from University of Bologna. My research interests are Machine Learning 
+and Neural Networks, mainly applied to the solution of ill-conditioned Inverse Problems. Sometimes I teach.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://twitter.com/DavideEvangel17" title="Twitter" class="no-mark-external">
+      <span class="icon-twitter"></span>
+      <span class="sr-only">Twitter</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/devangelista2" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:davide.evangelista5@unibo.it" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Related Posts</h2>  <ul class="related-posts">                  <li class="h4">  <a href="/teaching/2022-09-27-LDA/" class="flip-title"><span>Why PCA is not sufficient?</span></a>  <time class="faded fine" datetime="2022-09-27T00:00:00+02:00">27 Sep 2022</time></li>                        <li class="h4">  <a href="/teaching/2022-09-26-short_introduction_to_ML/" class="flip-title"><span>A (very short) introduction to Machine Learning</span></a>  <time class="faded fine" datetime="2022-09-26T00:00:00+02:00">26 Sep 2022</time></li>                        <li class="h4">  <a href="/research/2022-09-26-short_introduction_to_ML/" class="flip-title"><span>A (very short) introduction to Machine Learning</span></a>  <time class="faded fine" datetime="2022-09-26T00:00:00+02:00">26 Sep 2022</time></li>            </ul></aside>
+
+  
+
+  
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2021. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+    <p><small>Powered by <a class="external" href="https://hydejack.com/">Hydejack</a> v<span id="_version">9.1.6</span></small></p>
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(37,150,190);background-image:url(/assets/img/blog/futuristic-networking-technology.jpeg)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/blog/logo.png" class="avatar" alt="Davide Evangelista" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">Davide Evangelista</h2></a>
+    
+    
+      <p class="">
+        Machine Learning and Neural Networks
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/research/"
+          class="sidebar-nav-item "
+          
+        >
+          Research
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/teaching/"
+          class="sidebar-nav-item "
+          
+        >
+          Teaching
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/cv/"
+          class="sidebar-nav-item "
+          
+        >
+          CV
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          Documentation
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/about/"
+          class="sidebar-nav-item "
+          
+        >
+          About
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://twitter.com/DavideEvangel17" title="Twitter" class="no-mark-external">
+      <span class="icon-twitter"></span>
+      <span class="sr-only">Twitter</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/devangelista2" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:davide.evangelista5@unibo.it" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>!function(){var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())}();
+</script>
+  <script src="/assets/js/hydejack-9.1.6.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.1.6.js" nomodule defer></script>
+  
+
+  
+
+<!--<![endif]-->
+  <!-- <script>
+  document.querySelector('hy-push-state').setAttribute('prefetch', '');
+
+  document.querySelectorAll('.sidebar a[href^="/"]').forEach(function (el) { 
+    el.addEventListener('click', function (e) {
+      if (el.pathname === window.location.pathname) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelector('hy-drawer').close();
+      }
+    });
+  });
+</script> -->
+
+<!--
+Code for integrating CloudFlare's email protection with Hydejack's single page app loading.
+-->
+<script>
+  document.getElementById('_pushState').addEventListener('hy-push-state-after', function (e) {
+    function e(e){
+      (console.error?console.error:console.log).call(console,e)
+    }
+
+    function t(e){
+      return l.innerHTML='<a href="'+e.replace(/"/g,"&quot;")+'"></a>',l.childNodes[0].getAttribute("href")
+    }
+
+    function r(e,t){
+      var r=e.substr(t,2);return parseInt(r,16)
+    }
+
+    function n(e,n){
+      for(var o="",c=r(e,n),a=n+2;a<e.length;a+=2){
+        var l=r(e,a)^c;
+        o+=String.fromCharCode(l)
+      }
+      return t(o)
+    }
+
+    var o="/cdn-cgi/l/email-protection#",
+        c=".__cf_email__",
+        a="data-cfemail",
+        l=document.createElement("div");
+
+    !function(){
+      for(var t=document.getElementsByTagName("a"),r=0;r<t.length;r++)
+        try{
+          var c=t[r],a=c.href.indexOf(o);
+          a>-1&&(c.href="mailto:"+n(c.href,a+o.length))
+        }catch(t){
+          e(t)
+        }
+    }(),
+    function(){
+      for(var t=document.querySelectorAll(c),r=0;r<t.length;r++)
+        try{
+          var o=t[r],l=n(o.getAttribute(a),0),i=document.createTextNode(l);
+          o.parentNode.replaceChild(i,o)
+        }catch(t){
+          e(t)
+        }
+    }()
+  });
+</script>
+
+
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+</div>
+
+
+</body>
+</html>
